@@ -222,3 +222,132 @@ export function detectInternalTransfers(banks: { key: string; rows: Row[] }[]): 
   }
   return transfers;
 }
+
+export type SuspensType = 'frais_non_comptabilise' | 'impaye' | 'remise_non_creditee' | 'cheque_emis_non_debite' | 'encaissement_non_comptabilise' | 'non_categorise';
+
+export interface SuspensItem {
+  type: SuspensType;
+  id_ligne?: string;
+  ref?: string;
+  libelle?: string;
+  montant: number;
+  date?: string;
+  montant_corrige?: number;
+  piece?: string;
+}
+
+export interface LedgerMatchResult {
+  matchedBank: string[];
+  suspens: SuspensItem[];
+}
+
+const FEE_TOKENS = ['frais', 'commission', 'tenue', 'com'];
+const FEE_PATTERN = new RegExp(`\\b(?:${FEE_TOKENS.join('|')})\\b`, 'i');
+const NUMERIC_REF_PATTERN = /\d{5,}/g;
+
+const hasFeeToken = (libelle: string | undefined): boolean => FEE_PATTERN.test(libelle ?? '');
+
+const bankRefToken = (libelle: string | undefined): string | undefined => {
+  const match = (libelle ?? '').match(PIECE_PATTERN);
+  return match ? match[0].toUpperCase() : undefined;
+};
+
+const numericTokensOf = (libelle: string | undefined): string[] => (libelle ?? '').match(NUMERIC_REF_PATTERN) ?? [];
+
+const sharesNumericRef = (a: string | undefined, b: string | undefined): boolean => {
+  const tokensA = numericTokensOf(a);
+  const tokensB = numericTokensOf(b);
+  for (const token of tokensA) {
+    if (tokensB.includes(token)) return true;
+  }
+  return false;
+};
+
+const isOnAccount = (row: Row, bankAccount: string): boolean => (row.compte ?? '') === bankAccount;
+
+export function matchBankToLedger(bank: { key: string; rows: Row[] }, ledger: Row[], bankAccount: string): LedgerMatchResult {
+  const matchedBank: string[] = [];
+  const suspens: SuspensItem[] = [];
+  const matchedGl = new Set<number>();
+
+  const candidateGlRows = (): Array<{ index: number; row: Row }> => {
+    const candidates: Array<{ index: number; row: Row }> = [];
+    ledger.forEach((row, index) => {
+      if (!matchedGl.has(index) && isOnAccount(row, bankAccount)) candidates.push({ index, row });
+    });
+    return candidates;
+  };
+
+  const sameReference = (bankRow: Row, glRow: Row): boolean => {
+    const idLigne = bankRow.id_ligne ?? '';
+    const strictRef = idLigne.length > 0 && (glRow.ref_banque ?? '') === idLigne;
+    const token = bankRefToken(bankRow.libelle);
+    const glRefs = [glRow.piece ?? '', glRow.ref_banque ?? ''].map((value) => value.toUpperCase());
+    return strictRef || (token !== undefined && glRefs.includes(token));
+  };
+
+  const sameAmount = (bankRow: Row, glRow: Row): boolean => {
+    const bankDebit = cents(amount(bankRow.debit));
+    const bankCredit = cents(amount(bankRow.credit));
+    const glDebit = cents(amount(glRow.debit));
+    const glCredit = cents(amount(glRow.credit));
+    if (bankDebit > 0 && bankCredit === 0) return glCredit === bankDebit && glDebit === 0;
+    if (bankCredit > 0 && bankDebit === 0) return glDebit === bankCredit && glCredit === 0;
+    return false;
+  };
+
+  const directlyMatched = new Set<number>();
+  bank.rows.forEach((bankRow, bankIndex) => {
+    if (cents(amount(bankRow.debit)) === 0 && cents(amount(bankRow.credit)) === 0) return;
+    const match = candidateGlRows().find(({ row }) => sameReference(bankRow, row) && sameAmount(bankRow, row));
+    if (!match) return;
+    matchedGl.add(match.index);
+    directlyMatched.add(bankIndex);
+    if (bankRow.id_ligne) matchedBank.push(bankRow.id_ligne);
+  });
+
+  const unmatchedCredits: Row[] = [];
+  bank.rows.forEach((bankRow, bankIndex) => {
+    if (directlyMatched.has(bankIndex)) return;
+    const bankDebit = cents(amount(bankRow.debit));
+    const bankCredit = cents(amount(bankRow.credit));
+    if (bankDebit === 0 && bankCredit === 0) return;
+    if (bankDebit > 0) {
+      if (hasFeeToken(bankRow.libelle)) {
+        suspens.push({ type: 'frais_non_comptabilise', id_ligne: bankRow.id_ligne, libelle: bankRow.libelle, montant: mad(amount(bankRow.debit)), date: bankRow.date_operation });
+        return;
+      }
+      const creditIndex = unmatchedCredits.findIndex((credit) => cents(amount(credit.credit)) === bankDebit && sharesNumericRef(bankRow.libelle, credit.libelle));
+      if (creditIndex >= 0) {
+        unmatchedCredits.splice(creditIndex, 1);
+        suspens.push({ type: 'impaye', id_ligne: bankRow.id_ligne, libelle: bankRow.libelle, montant: mad(amount(bankRow.debit)), date: bankRow.date_operation });
+        return;
+      }
+      suspens.push({ type: 'non_categorise', id_ligne: bankRow.id_ligne, libelle: bankRow.libelle, montant: mad(amount(bankRow.debit)), date: bankRow.date_operation });
+      return;
+    }
+    unmatchedCredits.push(bankRow);
+  });
+
+  for (const credit of unmatchedCredits) {
+    suspens.push({ type: 'encaissement_non_comptabilise', id_ligne: credit.id_ligne, libelle: credit.libelle, montant: mad(amount(credit.credit)), date: credit.date_operation });
+  }
+
+  ledger.forEach((glRow, index) => {
+    if (matchedGl.has(index) || !isOnAccount(glRow, bankAccount)) return;
+    const glDebit = cents(amount(glRow.debit));
+    const glCredit = cents(amount(glRow.credit));
+    const piece = glRow.piece ?? '';
+    const ref = piece.length > 0 ? piece : undefined;
+    const libelle = (glRow.libelle ?? '').length > 0 ? glRow.libelle : ref;
+    if (glDebit > 0) {
+      suspens.push({ type: 'remise_non_creditee', ref, libelle, montant: mad(amount(glRow.debit)), date: glRow.date_ecriture, piece: ref });
+      return;
+    }
+    if (glCredit > 0) {
+      suspens.push({ type: 'cheque_emis_non_debite', ref, libelle, montant: mad(amount(glRow.credit)), date: glRow.date_ecriture, piece: ref });
+    }
+  });
+
+  return { matchedBank, suspens };
+}
