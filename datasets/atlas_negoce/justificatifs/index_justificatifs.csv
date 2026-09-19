@@ -1,0 +1,27 @@
+fichier,type,date,tiers,devise,ht,tva,ttc_ou_montant,statut_plateforme
+justificatifs/FAC_ACHAT/SC-2026-1187_SoftCloud.pdf,FACTURE,2026-08-01,F005,MAD,36000.00,7200.00,43200.00,saisie GL SC-2026-1187
+justificatifs/FAC_ACHAT/ED-77812_ElectroDistrib.pdf,FACTURE,2026-08-03,F001,MAD,178800.00,35760.00,214560.00,saisie GL ED-77812
+justificatifs/FAC_ACHAT/ED-78150_ElectroDistrib.pdf,FACTURE,2026-08-24,F001,MAD,96500.00,19300.00,115800.00,saisie GL ED-78150
+justificatifs/FAC_ACHAT/INV-BW-2026-118_Shenzhen.pdf,COMMERCIAL INVOICE,2026-08-03,F002,USD,20000.00,0.00,20000.00,saisie GL INV-BW-2026-118
+justificatifs/FAC_ACHAT/IT-2026-0933_InfoTech.pdf,FACTURE,2026-08-12,F010,MAD,29000.00,5800.00,34800.00,saisie GL IT-2026-0933
+justificatifs/FAC_ACHAT/TE-5498_TransitExpress.pdf,FACTURE,2026-08-14,F012,MAD,10000.00,2000.00,12000.00,saisie GL TE-5498
+justificatifs/FAC_ACHAT/TE-5521_TransitExpress.pdf,FACTURE,2026-08-20,F012,MAD,3637.60,727.52,4365.12,saisie GL TE-5521
+justificatifs/FAC_ACHAT/TE-5530_TransitExpress.pdf,FACTURE,2026-08-28,F012,MAD,2600.00,520.00,3120.00,saisie GL TE-5530
+justificatifs/FAC_ACHAT/REG-2026-07-88120_REDEC.pdf,FACTURE,2026-07-31,F003,MAD,4000.00,560.00,4560.00,saisie GL REG-2026-07-88120 (le 04/08)
+justificatifs/RECUS_EN_SEPTEMBRE/CJN-2026-061_CabinetNour.pdf,NOTE D’HONORAIRES,2026-09-02,F014,MAD,8000.00,1600.00,9600.00,reçue le 03/09 — non saisie
+justificatifs/FAC_ACHAT/FS-2231_FroidService.pdf,FACTURE,2026-08-22,F013,MAD,850.00,0.00,850.00,saisie GL OD-2026-08-0142 (incomplète)
+justificatifs/TICKETS/Ticket_carburant_2026-08-08.pdf,TICKET CARBURANT,2026-08-08,,MAD,500.00,100.00,600.00,saisie GL TK-0808
+justificatifs/TICKETS/Note_restaurant_DarMima_2026-08-13.pdf,NOTE,2026-08-13,,MAD,1200.00,120.00,1320.00,saisie GL ND-0813
+justificatifs/NOTES_DE_FRAIS/Facture_hotel_gerant_2026-08-17.pdf,FACTURE,2026-08-17,A001,MAD,2000.00,200.00,2200.00,non saisie — avancée par le gérant
+justificatifs/FAC_VENTE/FAC-2026-0425_EUROLUX.pdf,FACTURE,2026-08-05,C005,EUR,9500.00,0.00,9500.00,saisie GL FAC-2026-0425
+justificatifs/FAC_VENTE/FAC-2026-0426_AnfaPark.pdf,FACTURE,2026-08-12,C001,MAD,60000.00,12000.00,72000.00,saisie GL FAC-2026-0426
+justificatifs/FAC_VENTE/FAC-2026-0427_RiadZitoun.pdf,FACTURE,2026-08-20,C002,MAD,36000.00,7200.00,43200.00,saisie GL FAC-2026-0427
+justificatifs/FAC_VENTE/FAC-2026-0428_CliniqueAlAmal.pdf,FACTURE,2026-08-25,C004,MAD,10000.00,2000.00,12000.00,NON SAISIE
+justificatifs/FAC_VENTE/FAC-2026-0429_AnfaPark.pdf,FACTURE,2026-08-30,C001,MAD,8000.00,1600.00,9600.00,saisie GL FAC-2026-0429
+justificatifs/COURRIERS/Devis_DV-2026-118.pdf,DEVIS,2026-07-15,C004,MAD,45000.00,9000.00,54000.00,devis accepté
+justificatifs/COURRIERS/PV_caisse_2026-08-31.pdf,Procès-verbal de comptage de caisse,2026-08-31,,MAD,,,4480.00,contrôle physique
+justificatifs/COURRIERS/PV_reception_CliniqueAlAmal_2026-08-28.pdf,Procès-verbal de réception des travaux,2026-08-28,C004,MAD,,,45000.00,"travaux réceptionnés, non facturés en août"
+justificatifs/COURRIERS/Contrat_bail_2026.pdf,Contrat de bail commercial (extrait),2025-12-20,B001,MAD,,,20000.00,contrat
+justificatifs/COURRIERS/Bordereau_remise_cheques_0831.pdf,Bordereau de remise de chèques n° 0831 — Banque Alpha,2026-08-31,C001,MAD,,,9600.00,remise du 31/08
+justificatifs/RELEVES/Releve_Banque_Alpha_2026-08.pdf,RELEVÉ,2026-08-31,,MAD,,,351616.26,PDF numérique
+justificatifs/RELEVES/Releve_Banque_Omega_2026-08_scan.pdf,RELEVÉ (scan),2026-08-31,,MAD,,,246075.19,image scannée — OCR requis

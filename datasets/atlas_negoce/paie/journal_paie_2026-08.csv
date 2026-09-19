@@ -1,0 +1,7 @@
+matricule,nom,poste,salaire_brut,cnss_salariale,amo_salariale,frais_professionnels,sni,charges_famille,ir,net_a_payer,avance_imputee,net_vire,cnss_patronale,amo_patronale,cout_employeur
+E001,Sanaa EL IDRISSI,Comptable,9500.00,268.80,214.70,2375.00,6641.50,2,394.97,8621.53,0.00,8621.53,1298.80,390.45,11189.25
+E002,Hamza TAZI,Commercial (fixe + commissions),14000.00,268.80,316.40,2916.67,10498.13,1,1686.03,11728.77,0.00,11728.77,1658.80,575.40,16234.20
+E003,Rachid OUALI,Technicien installateur,7800.00,268.80,176.28,1950.00,5404.92,3,97.65,7257.27,0.00,7257.27,1162.80,320.58,9283.38
+E004,Imane BERRADA,Assistante commerciale,6200.00,268.80,140.12,2170.00,3621.08,0,28.78,5762.30,2000.00,3762.30,1034.80,254.82,7489.62
+E005,Omar FASSI,Magasinier,5400.00,241.92,122.04,1890.00,3146.04,2,0.00,5036.04,0.00,5036.04,916.92,221.94,6538.86
+E006,Nadia CHRAIBI,Responsable achats,16500.00,268.80,372.90,2916.67,12941.63,1,2516.82,13341.48,0.00,13341.48,1858.80,678.15,19036.95

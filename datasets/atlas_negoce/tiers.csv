@@ -1,0 +1,17 @@
+code,type,nom,compte,identifiant,pays,devise,delai_paiement_jours,adresse,remarques
+C001,client,Groupe Immobilier Anfa Park SA,34210001,009990100200031,MA,MAD,60,"Bd de la Corniche, Casablanca",
+C002,client,Hôtel Riad Zitoun SARL,34210002,009990100300022,MA,MAD,30,"Derb Zitoun, Marrakech",Contrat de maintenance semestriel facturé d’avance
+C003,client,BTP Chaouia SARL,34210003,009990100400013,MA,MAD,60,"Zone industrielle, Berrechid",Client en litige depuis fin 2025
+C004,client,Clinique Al Amal SA,34210004,009990100500004,MA,MAD,45,"Quartier Racine, Casablanca",
+C005,client,EUROLUX SAS,34210005,FR 61 889900112,FR,EUR,30,"14 rue des Lumières, 69003 Lyon, France",Export — exonéré de TVA avec droit à déduction
+F001,fournisseur,ElectroDistrib Maroc SA,44110001,009990200100045,MA,MAD,60,"Ain Sebaâ, Casablanca",Pas de convention de délai écrite
+F002,fournisseur,"Shenzhen Brightway Lighting Co., Ltd",44110002,CN-91440300MA5F,CN,USD,90,"Bao’an District, Shenzhen, China",Fournisseur étranger en USD
+F003,fournisseur,REDEC — Régie de Distribution Eau & Électricité,44110003,009990200300027,MA,MAD,15,Casablanca,Prélèvement automatique Banque Alpha
+F004,fournisseur,TelcoNet SA,44110004,009990200400018,MA,MAD,0,Rabat,"Prélèvement automatique, facture sur espace client"
+F005,fournisseur,SoftCloud ERP SARL,44110005,009990200500009,MA,MAD,0,"Technopark, Casablanca",Abonnement logiciel annuel
+F010,fournisseur,InfoTech Distribution SARL,44110010,009990201000036,MA,MAD,0,"Derb Omar, Casablanca",
+F012,fournisseur,Transit Express SARL,44110012,009990201200017,MA,MAD,30,Port de Casablanca,Transport & transit
+F013,fournisseur,Froid Service — M. Adil Kettani (auto-entrepreneur),44110013,009990201300008,MA,MAD,30,"Hay Hassani, Casablanca",Non assujetti à la TVA
+F014,fournisseur,Cabinet Juridique Nour,44110014,009990201400099,MA,MAD,30,"Maârif, Casablanca",
+B001,bailleur,M. Karim BENNANI (personne physique),,CIN BE000000,MA,MAD,0,Casablanca,Loyer mensuel 20 000 MAD — retenue à la source revenus fonciers
+A001,associe,"Youssef ALAOUI (gérant, 60 %)",4463,,MA,MAD,0,,Compte courant 4463 ; 3463 si débiteur

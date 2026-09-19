@@ -1,0 +1,37 @@
+{
+  "name": "agent-cloture-mensuelle",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "cloture": "tsx src/cli/run_cloture.ts",
+    "eval": "node ../evaluation/evaluer.mjs ../datasets/atlas_negoce/attendu sortie_agent",
+    "start": "tsx src/server/main.ts",
+    "start:dev": "tsx watch src/server/main.ts",
+    "web:install": "npm --prefix web install",
+    "web:build": "npm --prefix web run build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.0.11",
+    "@nestjs/core": "^11.0.11",
+    "@nestjs/platform-express": "^11.0.11",
+    "bullmq": "^5.34.10",
+    "dotenv": "^16.4.7",
+    "ioredis": "^5.4.1",
+    "mysql2": "^3.12.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

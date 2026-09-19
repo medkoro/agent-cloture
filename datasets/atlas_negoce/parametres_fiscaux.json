@@ -1,0 +1,101 @@
+{
+  "avertissement": "Valeurs réalistes retenues POUR LE SUJET. Elles font foi dans ce dossier mais ne constituent pas une référence légale : en production, elles viennent du référentiel réglementaire de la plateforme.",
+  "tva": {
+    "taux_legaux": [
+      0,
+      7,
+      10,
+      14,
+      20
+    ],
+    "taux_par_nature": {
+      "marchandises": 20,
+      "services": 20,
+      "electricite": 14,
+      "frais_bancaires": 10,
+      "hotellerie_restauration": 10,
+      "export": 0
+    },
+    "regime_dossier": "encaissement",
+    "fait_generateur_encaissement": "TVA collectée exigible à l'encaissement ; TVA déductible au paiement du fournisseur",
+    "non_deductible": [
+      "carburant des véhicules de tourisme",
+      "réceptions / restauration offertes",
+      "biens et services à usage personnel"
+    ],
+    "reglement_especes": {
+      "seuil_ttc_par_operation": 5000,
+      "plafond_deductible_par_jour_et_fournisseur": 5000,
+      "plafond_deductible_par_mois_et_fournisseur": 50000,
+      "regle": "TVA déductible au prorata de la part du TTC admise (≤ 5 000 / jour / fournisseur)"
+    },
+    "declaration_mensuelle_echeance": "fin du mois suivant",
+    "penalite_retard": {
+      "premier_mois": 0.05,
+      "mois_supplementaire": 0.005
+    }
+  },
+  "charges_fiscalement_limitees": {
+    "reglement_especes_meme_regle_que_tva": true,
+    "vehicule_tourisme_base_amortissable_ttc": 300000
+  },
+  "cnss": {
+    "echeance": "le 10 du mois suivant",
+    "majoration_retard": {
+      "premier_mois": 0.03,
+      "mois_supplementaire": 0.01
+    },
+    "taux": {
+      "cnss_salariale": 0.0448,
+      "amo_salariale": 0.0226,
+      "plafond_mensuel_cnss": 6000,
+      "allocations_familiales_patronale": 0.064,
+      "prestations_sociales_patronale": 0.0898,
+      "taxe_formation_professionnelle": 0.016,
+      "amo_patronale": 0.0411
+    }
+  },
+  "ir_salaires": {
+    "echeance_versement": "fin du mois suivant",
+    "penalite_retard": {
+      "premier_mois": 0.05,
+      "mois_supplementaire": 0.005
+    }
+  },
+  "retenue_source_revenus_fonciers": {
+    "beneficiaire": "bailleur personne physique",
+    "taux_si_loyer_annuel_lt_120000": 0.1,
+    "taux_si_loyer_annuel_ge_120000": 0.15,
+    "versement": "fin du mois suivant le paiement"
+  },
+  "auto_entrepreneur": {
+    "retenue_source_taux": 0.3,
+    "seuil_annuel_par_client_ht": 80000
+  },
+  "delais_paiement": {
+    "delai_defaut_sans_convention_jours": 60,
+    "delai_max_convention_jours": 120,
+    "penalite": {
+      "premier_mois": 0.03,
+      "mois_supplementaire": 0.0085
+    },
+    "base": "TTC impayé",
+    "declaration": "trimestrielle (CA > 10 M MAD)"
+  },
+  "creances_douteuses": {
+    "provision_fiscalement_deductible_si": "action judiciaire engagée dans les 12 mois suivant la constatation"
+  },
+  "sarl": {
+    "comptes_courants_associes_debiteurs": "interdits pour les associés personnes physiques — alerte juridique systématique"
+  },
+  "is": {
+    "acomptes_provisionnels": 4,
+    "echeances": [
+      "03-31",
+      "06-30",
+      "09-30",
+      "12-31"
+    ],
+    "is_2025_reference": 312400
+  }
+}

@@ -1,0 +1,5 @@
+id_ligne,date_operation,date_valeur,libelle,debit,credit,statut_plateforme
+O01,2026-08-05,2026-08-05,ECHEANCE PRET 77120 N 18,11739.69,0.00,comptabilisée
+O02,2026-08-19,2026-08-19,VIR RECU ATLAS NEGOCE BANQUE ALPHA,0.00,50000.00,comptabilisée
+O03,2026-08-25,2026-08-25,VIR EMIS TRANSIT EXPRESS TE-5521,365.12,0.00,comptabilisée
+O04,2026-08-28,2026-08-28,FRAIS ET COMMISSIONS AOUT + TVA,220.00,0.00,non catégorisée

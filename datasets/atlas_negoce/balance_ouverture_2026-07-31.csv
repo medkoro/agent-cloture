@@ -1,0 +1,55 @@
+compte,libelle,debit,credit
+1111,Capital social,0.00,500000.00
+1140,Réserve légale,0.00,50000.00
+1161,Report à nouveau (solde créditeur),0.00,170118.55
+1481,Emprunts auprès des établissements de crédit,0.00,449248.55
+2340,Matériel de transport,640000.00,0.00
+2351,Mobilier de bureau,60000.00,0.00
+2355,Matériel informatique,99000.00,0.00
+2486,Dépôts et cautionnements versés,27500.00,0.00
+2834,Amortissements du matériel de transport,0.00,209333.38
+28351,Amortissements du mobilier de bureau,0.00,9500.00
+28355,Amortissements du matériel informatique,0.00,52500.00
+3111,Marchandises,845000.00,0.00
+34210001,Clients — Groupe Immobilier Anfa Park SA,118800.00,0.00
+34210003,Clients — BTP Chaouia SARL,48000.00,0.00
+34210004,Clients — Clinique Al Amal SA,96000.00,0.00
+3431,Avances et acomptes au personnel,2000.00,0.00
+34552,État — TVA récupérable sur charges,19200.00,0.00
+3458,État — autres comptes débiteurs,560.00,0.00
+3491,Charges constatées d'avance,9250.00,0.00
+44110001,Fournisseurs — ElectroDistrib Maroc SA,0.00,115200.00
+4417,Fournisseurs — factures non parvenues,0.00,4560.00
+4441,Caisse Nationale de Sécurité Sociale,0.00,12860.40
+4452,"État — impôts, taxes et assimilés (IR salaires, RAS)",0.00,6915.00
+4455,État — TVA facturée,0.00,43800.00
+4456,État — TVA due,0.00,18420.00
+4463,Comptes courants des associés créditeurs,0.00,150000.00
+51411,Banque Alpha — compte courant,477830.55,0.00
+51412,Banque Omega — compte courant,212400.00,0.00
+5161,Caisse,3400.00,0.00
+6111,Achats de marchandises,4650000.00,0.00
+6114,Variation de stocks de marchandises,0.00,35000.00
+6125,Achats non stockés de matières et fournitures (carburant),18400.00,0.00
+61251,"Achats de fournitures non stockables (eau, électricité)",31200.00,0.00
+61253,Achats de petit outillage et petit équipement,12300.00,0.00
+61254,Achats de fournitures de bureau,9850.00,0.00
+6131,Locations et charges locatives,150000.00,0.00
+6133,Entretien et réparations,14200.00,0.00
+6134,Primes d'assurances,12950.00,0.00
+61365,Honoraires,56000.00,0.00
+6142,Transports,88400.00,0.00
+61431,Voyages et déplacements,22300.00,0.00
+61436,Réceptions,9800.00,0.00
+6145,Frais postaux et frais de télécommunications,14000.00,0.00
+6147,Services bancaires,4870.00,0.00
+6167,"Impôts, taxes et droits assimilés",18500.00,0.00
+61711,Appointements et salaires,415800.00,0.00
+61741,Cotisations de sécurité sociale,72605.82,0.00
+6193,Dotations d'exploitation aux amortissements des immobilisations corporelles,86866.69,0.00
+6311,Intérêts des emprunts et dettes,18422.82,0.00
+6331,Pertes de change propres à l'exercice,3200.00,0.00
+7111,Ventes de marchandises au Maroc,0.00,5000000.00
+7113,Ventes de marchandises à l'étranger,0.00,420000.00
+7124,Ventes de services produits au Maroc,0.00,1120000.00
+7331,Gains de change propres à l'exercice,0.00,1150.00

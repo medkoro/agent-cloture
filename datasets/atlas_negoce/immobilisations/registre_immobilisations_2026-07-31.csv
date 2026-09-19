@@ -1,0 +1,7 @@
+id,libelle,compte,compte_amortissement,date_acquisition,valeur_origine_ht,taux_pct,dotation_mensuelle,cumul_amort_31_07,remarque
+IMM-001,Véhicule utilitaire Renault Master,2340,2834,2024-03-01,240000.00,20.0,4000.00,116000.00,
+IMM-002,Voiture de tourisme (usage gérant) — Peugeot 5008,2340,2834,2025-06-15,400000.00,20.0,6666.67,93333.38,Véhicule de tourisme : amortissement fiscalement plafonné (base 300 000 TTC) — réintégration extra-comptable en liasse
+IMM-003,Mobilier de bureau open-space,2351,28351,2025-01-10,60000.00,10.0,500.00,9500.00,
+IMM-004,Serveur & baie réseau,2355,28355,2026-02-01,45000.00,20.0,750.00,4500.00,
+IMM-005,Imprimante multifonction production,2355,28355,2022-05-20,36000.00,20.0,600.00,30000.00,
+IMM-006,Postes informatiques (lot 2019),2355,28355,2019-03-01,18000.00,20.0,300.00,18000.00,Totalement amorti

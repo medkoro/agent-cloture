@@ -1,0 +1,47 @@
+{
+  "banque_alpha": {
+    "solde_releve": 351616.26,
+    "solde_gl_avant": 382327.26,
+    "corrections": [
+      "P-04A",
+      "P-04B",
+      "P-06"
+    ],
+    "solde_gl_apres": 358096.26,
+    "suspens": [
+      {
+        "type": "remise_non_creditee",
+        "ref": "RCHQ-0831 / chèque 551903",
+        "montant": 9600,
+        "credit_attendu": "2026-09-02"
+      },
+      {
+        "type": "cheque_emis_non_debite",
+        "ref": "CHQ-0004521 Transit Express",
+        "montant": 3120
+      }
+    ],
+    "suspens_anterieur_apure": {
+      "ref": "chèque 0004512 (juillet)",
+      "ligne_releve": "A02",
+      "montant": 8400
+    },
+    "ecart_residuel": 0
+  },
+  "banque_omega": {
+    "solde_releve": 246075.19,
+    "solde_gl_avant": 250295.19,
+    "corrections": [
+      "P-03",
+      "P-04C"
+    ],
+    "solde_gl_apres": 246075.19,
+    "suspens": [],
+    "ecart_residuel": 0,
+    "controle_totaux_imprimes": {
+      "somme_debits_extraits": 12324.81,
+      "total_debit_imprime": 16324.81,
+      "ecart": 4000
+    }
+  }
+}

@@ -1,0 +1,85 @@
+code,libelle,nature,lettrable,compte_parent
+1111,Capital social,PASSIF,non,
+1140,Réserve légale,PASSIF,non,
+1161,Report à nouveau (solde créditeur),PASSIF,non,
+1481,Emprunts auprès des établissements de crédit,PASSIF,non,
+2340,Matériel de transport,ACTIF,non,
+2351,Mobilier de bureau,ACTIF,non,
+2355,Matériel informatique,ACTIF,non,
+2486,Dépôts et cautionnements versés,ACTIF,non,
+2834,Amortissements du matériel de transport,ACTIF,non,
+28351,Amortissements du mobilier de bureau,ACTIF,non,
+28355,Amortissements du matériel informatique,ACTIF,non,
+3111,Marchandises,ACTIF,non,
+3421,Clients (collectif — ne pas mouvementer directement),ACTIF,oui,
+34210001,Clients — Groupe Immobilier Anfa Park SA,ACTIF,oui,3421
+34210002,Clients — Hôtel Riad Zitoun SARL,ACTIF,oui,3421
+34210003,Clients — BTP Chaouia SARL,ACTIF,oui,3421
+34210004,Clients — Clinique Al Amal SA,ACTIF,oui,3421
+34210005,Clients — EUROLUX SAS (France),ACTIF,oui,3421
+3424,Clients douteux ou litigieux,ACTIF,oui,
+3427,Clients — factures à établir,ACTIF,non,
+3431,Avances et acomptes au personnel,ACTIF,oui,
+34551,État — TVA récupérable sur les immobilisations,ACTIF,non,
+34552,État — TVA récupérable sur charges,ACTIF,non,
+3456,État — crédit de TVA,ACTIF,non,
+3458,État — autres comptes débiteurs,ACTIF,non,
+3463,Comptes courants des associés débiteurs,ACTIF,non,
+3491,Charges constatées d'avance,ACTIF,non,
+3497,Comptes transitoires ou d'attente — débiteurs,ACTIF,non,
+3702,Écarts de conversion actif — augmentation des dettes circulantes,ACTIF,non,
+3942,Provisions pour dépréciation des clients,ACTIF,non,
+4411,Fournisseurs (collectif — ne pas mouvementer directement),PASSIF,oui,
+44110001,Fournisseurs — ElectroDistrib Maroc SA,PASSIF,oui,4411
+44110002,"Fournisseurs — Shenzhen Brightway Lighting Co., Ltd (USD)",PASSIF,oui,4411
+44110003,Fournisseurs — REDEC Régie Eau & Électricité,PASSIF,oui,4411
+44110004,Fournisseurs — TelcoNet SA,PASSIF,oui,4411
+44110005,Fournisseurs — SoftCloud ERP SARL,PASSIF,oui,4411
+44110010,Fournisseurs — InfoTech Distribution SARL,PASSIF,oui,4411
+44110012,Fournisseurs — Transit Express SARL,PASSIF,oui,4411
+44110013,Fournisseurs — Froid Service (auto-entrepreneur),PASSIF,oui,4411
+44110014,Fournisseurs — Cabinet Juridique Nour,PASSIF,oui,4411
+4417,Fournisseurs — factures non parvenues,PASSIF,non,
+4432,Rémunérations dues au personnel,PASSIF,non,
+4441,Caisse Nationale de Sécurité Sociale,PASSIF,non,
+4452,"État — impôts, taxes et assimilés (IR salaires, RAS)",PASSIF,non,
+4455,État — TVA facturée,PASSIF,non,
+4456,État — TVA due,PASSIF,non,
+4458,État — autres comptes créditeurs,PASSIF,non,
+4463,Comptes courants des associés créditeurs,PASSIF,non,
+4491,Produits constatés d'avance,PASSIF,non,
+4493,Intérêts courus et non échus à payer,PASSIF,non,
+4497,Comptes transitoires ou d'attente — créditeurs,PASSIF,non,
+4506,Provisions pour pertes de change,PASSIF,non,
+5115,Virements de fonds,ACTIF,non,
+51411,Banque Alpha — compte courant,ACTIF,non,5141
+51412,Banque Omega — compte courant,ACTIF,non,5141
+5161,Caisse,ACTIF,non,
+6111,Achats de marchandises,CHARGE,non,
+6114,Variation de stocks de marchandises,CHARGE,non,
+6125,Achats non stockés de matières et fournitures (carburant),CHARGE,non,
+61251,"Achats de fournitures non stockables (eau, électricité)",CHARGE,non,
+61253,Achats de petit outillage et petit équipement,CHARGE,non,
+61254,Achats de fournitures de bureau,CHARGE,non,
+6131,Locations et charges locatives,CHARGE,non,
+6133,Entretien et réparations,CHARGE,non,
+6134,Primes d'assurances,CHARGE,non,
+61365,Honoraires,CHARGE,non,
+6142,Transports,CHARGE,non,
+61431,Voyages et déplacements,CHARGE,non,
+61436,Réceptions,CHARGE,non,
+6145,Frais postaux et frais de télécommunications,CHARGE,non,
+6147,Services bancaires,CHARGE,non,
+6167,"Impôts, taxes et droits assimilés",CHARGE,non,
+61711,Appointements et salaires,CHARGE,non,
+61741,Cotisations de sécurité sociale,CHARGE,non,
+6193,Dotations d'exploitation aux amortissements des immobilisations corporelles,CHARGE,non,
+6196,Dotations d'exploitation aux provisions pour dépréciation de l'actif circulant,CHARGE,non,
+6311,Intérêts des emprunts et dettes,CHARGE,non,
+6331,Pertes de change propres à l'exercice,CHARGE,non,
+6393,Dotations aux provisions pour risques et charges financières,CHARGE,non,
+6583,Pénalités et amendes fiscales ou pénales,CHARGE,non,
+7111,Ventes de marchandises au Maroc,PRODUIT,non,
+7113,Ventes de marchandises à l'étranger,PRODUIT,non,
+7124,Ventes de services produits au Maroc,PRODUIT,non,
+7331,Gains de change propres à l'exercice,PRODUIT,non,

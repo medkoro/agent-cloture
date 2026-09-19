@@ -1,0 +1,88 @@
+{
+  "raison_sociale": "ATLAS NÉGOCE SARL",
+  "forme": "SARL",
+  "capital": 500000,
+  "ville": "Casablanca",
+  "adresse": "112, boulevard Abdelmoumen, 20360 Casablanca",
+  "activite": "Distribution de matériel électrique et prestations d'installation / maintenance",
+  "identifiants_fictifs": {
+    "IF": "99001234",
+    "ICE": "009990012300047",
+    "RC": "CASA 499001",
+    "CNSS": "9900123",
+    "TP": "35799001"
+  },
+  "exercice": {
+    "debut": "2026-01-01",
+    "fin": "2026-12-31"
+  },
+  "periode_a_cloturer": {
+    "debut": "2026-08-01",
+    "fin": "2026-08-31",
+    "libelle": "Août 2026"
+  },
+  "derniere_periode_verrouillee": {
+    "fin": "2026-07-31",
+    "verrouillee_le": "2026-08-10T18:02:00",
+    "par": "expert.comptable"
+  },
+  "tva": {
+    "regime": "encaissement",
+    "periodicite": "mensuelle",
+    "prorata": null
+  },
+  "devise_tenue": "MAD",
+  "ca_ht_2025": 12480000,
+  "gerant": {
+    "nom": "Youssef ALAOUI",
+    "qualite": "Gérant associé (60 %)"
+  },
+  "associes": [
+    {
+      "nom": "Youssef ALAOUI",
+      "parts": 60
+    },
+    {
+      "nom": "Leila ALAOUI",
+      "parts": 40
+    }
+  ],
+  "banques": [
+    {
+      "compte": "51411",
+      "banque": "Banque Alpha",
+      "rib": "011 780 0000712345678900 42",
+      "usage": "Compte principal (clients, fournisseurs, salaires, État)"
+    },
+    {
+      "compte": "51412",
+      "banque": "Banque Omega",
+      "rib": "230 810 3310987654320011 07",
+      "usage": "Compte du prêt n° 77120 + quelques fournisseurs ; relevé papier scanné"
+    }
+  ],
+  "caisse": {
+    "compte": "5161",
+    "plafond_politique": 20000
+  },
+  "effectif": 6,
+  "utilisateurs": [
+    {
+      "login": "expert.comptable",
+      "role": "Expert-comptable (valide et verrouille)"
+    },
+    {
+      "login": "collab.fz",
+      "role": "Collaboratrice comptable du cabinet"
+    },
+    {
+      "login": "client.youssef",
+      "role": "Gérant (client) — répond aux questions"
+    },
+    {
+      "login": "agent.import",
+      "role": "Imports automatiques DocumentAI / banque"
+    }
+  ],
+  "avertissement": "Société, personnes, banques et identifiants fictifs — toute ressemblance serait fortuite."
+}

@@ -1,0 +1,50 @@
+{
+  "alpha": {
+    "solde_releve": 351616.26,
+    "solde_gl_avant": 382327.26,
+    "solde_gl_apres": 382327.26,
+    "ecart_residuel": -30711,
+    "corrections": [],
+    "suspens": [
+      {
+        "id": "A02",
+        "libelle": "CHQ N 0004512",
+        "debit": "8400.00",
+        "credit": "0.00"
+      },
+      {
+        "id": "A10",
+        "libelle": "COM RECEPTION VIR INTL + TVA",
+        "debit": "165.00",
+        "credit": "0.00"
+      },
+      {
+        "id": "A23",
+        "libelle": "CHQ IMPAYE N 7781204 BTP CHAOUIA MOTIF SANS PROVISION",
+        "debit": "24000.00",
+        "credit": "0.00"
+      },
+      {
+        "id": "A24",
+        "libelle": "FRAIS REJET CHQ + TVA",
+        "debit": "66.00",
+        "credit": "0.00"
+      }
+    ]
+  },
+  "omega": {
+    "solde_releve": 246075.19,
+    "solde_gl_avant": 250295.19,
+    "solde_gl_apres": 250295.19,
+    "ecart_residuel": -4220,
+    "corrections": [],
+    "suspens": [
+      {
+        "id": "O04",
+        "libelle": "FRAIS ET COMMISSIONS AOUT + TVA",
+        "debit": "220.00",
+        "credit": "0.00"
+      }
+    ]
+  }
+}

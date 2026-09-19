@@ -1,0 +1,262 @@
+{
+  "regime": "encaissement",
+  "tva_collectee_exigible": 55000.0,
+  "tva_deductible_charges": 46283.49,
+  "tva_deductible_immobilisations": 2900.0,
+  "credit_anterieur": 0,
+  "tva_due": 5816.51,
+  "echeance": "2026-09-30",
+  "detail_collectee": [
+    {
+      "piece": "FAC-2026-0412",
+      "tiers": "C001",
+      "preuve": "ALPHA:A03",
+      "date_encaissement": "2026-08-05",
+      "ttc": 118800,
+      "taux": 20,
+      "statut": "exigible"
+    },
+    {
+      "piece": "FAC-2026-0418",
+      "tiers": "C004",
+      "preuve": "ALPHA:A05",
+      "date_encaissement": "2026-08-07",
+      "ttc": 36000,
+      "taux": 20,
+      "statut": "exigible (lettrage 50 000 → 0418 soldée)"
+    },
+    {
+      "piece": "FAC-2026-0421",
+      "tiers": "C004",
+      "preuve": "ALPHA:A05+A21",
+      "date_encaissement": "2026-08-29",
+      "ttc": 60000,
+      "taux": 20,
+      "statut": "exigible (14 000 le 07/08 + 46 000 le 29/08)"
+    },
+    {
+      "piece": "FAC-2026-0427",
+      "tiers": "C002",
+      "preuve": "ALPHA:A14",
+      "date_encaissement": "2026-08-20",
+      "ttc": 43200,
+      "taux": 20,
+      "statut": "exigible (même si le service est en septembre)"
+    },
+    {
+      "piece": "FAC-2026-0426",
+      "tiers": "C001",
+      "preuve": "ALPHA:A22",
+      "date_encaissement": "2026-08-29",
+      "ttc": 72000,
+      "taux": 20,
+      "statut": "exigible sur 72 000 (écart 18 = frais admis)"
+    },
+    {
+      "piece": "FAC-2026-0425",
+      "tiers": "C005",
+      "preuve": "ALPHA:A09",
+      "date_encaissement": "2026-08-14",
+      "ttc": 100890,
+      "taux": 0,
+      "statut": "export exonéré — 0"
+    },
+    {
+      "piece": "FAC-2025-0877",
+      "tiers": "C003",
+      "preuve": "ALPHA:A15/A23",
+      "date_encaissement": "2026-08-21",
+      "ttc": 24000,
+      "taux": 20,
+      "statut": "EXCLU : chèque rejeté le 30/08, pas un encaissement"
+    },
+    {
+      "piece": "FAC-2026-0429",
+      "tiers": "C001",
+      "preuve": "remise 31/08",
+      "date_encaissement": "2026-09-02",
+      "ttc": 9600,
+      "taux": 20,
+      "statut": "EXCLU : crédité en septembre"
+    },
+    {
+      "piece": "A25 7 500",
+      "tiers": "",
+      "preuve": "ALPHA:A25",
+      "date_encaissement": "2026-08-31",
+      "ttc": 7500,
+      "taux": 0,
+      "statut": "EXCLU : restitution de caution, hors champ"
+    }
+  ],
+  "detail_deductible": [
+    {
+      "piece": "SC-2026-1187",
+      "tiers": "F005",
+      "date_paiement": "2026-08-01",
+      "tva": 7200.0,
+      "categorie": "charges",
+      "statut": "déductible"
+    },
+    {
+      "piece": "REG-2026-07-88120",
+      "tiers": "F003",
+      "date_paiement": "2026-08-18",
+      "tva": 560.0,
+      "categorie": "charges",
+      "statut": "déductible (payée en août)"
+    },
+    {
+      "piece": "ED-77812",
+      "tiers": "F001",
+      "date_paiement": "2026-08-11",
+      "tva": 35760.0,
+      "categorie": "charges",
+      "statut": "déductible UNE fois (le doublon ED77812 ne compte pas)"
+    },
+    {
+      "piece": "A06 frais tenue",
+      "tiers": "",
+      "date_paiement": "2026-08-08",
+      "tva": 10.0,
+      "categorie": "charges",
+      "statut": "déductible (10 %)"
+    },
+    {
+      "piece": "A10 com. réception",
+      "tiers": "",
+      "date_paiement": "2026-08-14",
+      "tva": 15.0,
+      "categorie": "charges",
+      "statut": "déductible"
+    },
+    {
+      "piece": "A17 com. virement",
+      "tiers": "",
+      "date_paiement": "2026-08-22",
+      "tva": 30.0,
+      "categorie": "charges",
+      "statut": "déductible"
+    },
+    {
+      "piece": "A24 frais rejet",
+      "tiers": "",
+      "date_paiement": "2026-08-30",
+      "tva": 6.0,
+      "categorie": "charges",
+      "statut": "déductible"
+    },
+    {
+      "piece": "O04 frais Omega",
+      "tiers": "",
+      "date_paiement": "2026-08-28",
+      "tva": 20.0,
+      "categorie": "charges",
+      "statut": "déductible"
+    },
+    {
+      "piece": "Écart Anfa Park",
+      "tiers": "C001",
+      "date_paiement": "2026-08-29",
+      "tva": 1.64,
+      "categorie": "charges",
+      "statut": "déductible (écart ≤ 50 traité en frais)"
+    },
+    {
+      "piece": "TE-5498 espèces",
+      "tiers": "F012",
+      "date_paiement": "2026-08-16",
+      "tva": 833.33,
+      "categorie": "charges",
+      "statut": "partielle : 2 000 × 5 000 / 12 000"
+    },
+    {
+      "piece": "TE-5521",
+      "tiers": "F012",
+      "date_paiement": "2026-08-25",
+      "tva": 727.52,
+      "categorie": "charges",
+      "statut": "déductible (payée 25/08, montant réel 4 365,12)"
+    },
+    {
+      "piece": "TE-5530",
+      "tiers": "F012",
+      "date_paiement": "2026-08-28",
+      "tva": 520.0,
+      "categorie": "charges",
+      "statut": "déductible (chèque émis le 28/08)"
+    },
+    {
+      "piece": "TN-08-2026-4471",
+      "tiers": "F004",
+      "date_paiement": "2026-08-26",
+      "tva": 400.0,
+      "categorie": "charges",
+      "statut": "déductible APRÈS obtention de la facture (Q05)"
+    },
+    {
+      "piece": "Hôtel NDF gérant",
+      "tiers": "A001",
+      "date_paiement": "2026-08-17",
+      "tva": 200.0,
+      "categorie": "charges",
+      "statut": "déductible (facture au nom de la société)"
+    },
+    {
+      "piece": "IT-2026-0933 Dell",
+      "tiers": "F010",
+      "date_paiement": "2026-08-12",
+      "tva": 2900.0,
+      "categorie": "immobilisations",
+      "statut": "déductible sur immobilisation (34551)"
+    },
+    {
+      "piece": "IT-2026-0933 MacBook",
+      "tiers": "F010",
+      "date_paiement": "2026-08-12",
+      "tva": 0.0,
+      "categorie": "exclu",
+      "statut": "NON déductible : usage personnel"
+    },
+    {
+      "piece": "Carburant 5008",
+      "tiers": "",
+      "date_paiement": "2026-08-08",
+      "tva": 0.0,
+      "categorie": "exclu",
+      "statut": "NON déductible : véhicule de tourisme"
+    },
+    {
+      "piece": "Restaurant Dar Mima",
+      "tiers": "",
+      "date_paiement": "2026-08-13",
+      "tva": 0.0,
+      "categorie": "exclu",
+      "statut": "NON déductible : réception"
+    },
+    {
+      "piece": "ED-78150 / ED-75002",
+      "tiers": "F001",
+      "date_paiement": "",
+      "tva": 0.0,
+      "categorie": "exclu",
+      "statut": "non payées au 31/08"
+    },
+    {
+      "piece": "Shenzhen INV-BW-2026-118",
+      "tiers": "F002",
+      "date_paiement": "",
+      "tva": 0.0,
+      "categorie": "exclu",
+      "statut": "facture étrangère sans TVA (TVA import hors dossier)"
+    },
+    {
+      "piece": "Froid Service FS-2231",
+      "tiers": "F013",
+      "date_paiement": "",
+      "tva": 0.0,
+      "categorie": "exclu",
+      "statut": "fournisseur non assujetti"
+    }
+  ]
+}

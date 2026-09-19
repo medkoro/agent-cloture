@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ANO-001",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Mouvement bancaire non rapproché (alpha).",
+    "sujet": "Mouvement bancaire non rapproché (alpha)",
+    "preuve": "BQ:alpha:A02"
+  },
+  {
+    "id": "ANO-002",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Mouvement bancaire non rapproché (alpha).",
+    "sujet": "Mouvement bancaire non rapproché (alpha)",
+    "preuve": "BQ:alpha:A10"
+  },
+  {
+    "id": "ANO-003",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Mouvement bancaire non rapproché (alpha).",
+    "sujet": "Mouvement bancaire non rapproché (alpha)",
+    "preuve": "BQ:alpha:A23"
+  },
+  {
+    "id": "ANO-004",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Mouvement bancaire non rapproché (alpha).",
+    "sujet": "Mouvement bancaire non rapproché (alpha)",
+    "preuve": "BQ:alpha:A24"
+  },
+  {
+    "id": "ANO-005",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Mouvement bancaire non rapproché (omega).",
+    "sujet": "Mouvement bancaire non rapproché (omega)",
+    "preuve": "BQ:omega:O04"
+  },
+  {
+    "id": "ANO-006",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Écriture sans justificatif référencé.",
+    "sujet": "Écriture sans justificatif référencé",
+    "preuve": "GL:OD-2026-07-0093"
+  },
+  {
+    "id": "ANO-007",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Écriture sans justificatif référencé.",
+    "sujet": "Écriture sans justificatif référencé",
+    "preuve": "GL:A01"
+  },
+  {
+    "id": "ANO-008",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Écriture sans justificatif référencé.",
+    "sujet": "Écriture sans justificatif référencé",
+    "preuve": "GL:A03"
+  },
+  {
+    "id": "ANO-009",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Écriture sans justificatif référencé.",
+    "sujet": "Écriture sans justificatif référencé",
+    "preuve": "GL:O01"
+  },
+  {
+    "id": "ANO-010",
+    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Écriture sans justificatif référencé.",
+    "sujet": "Écriture sans justificatif référencé",
+    "preuve": "GL:A04"
+  }
+]

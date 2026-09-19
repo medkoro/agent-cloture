@@ -1,0 +1,55 @@
+[
+  {
+    "obligation": "CNSS août 2026",
+    "echeance": "2026-09-10",
+    "montant": 13686.43,
+    "note": "inclut la majoration de juillet"
+  },
+  {
+    "obligation": "IR salaires juillet 2026 (EN RETARD)",
+    "echeance": "2026-08-31",
+    "montant": 6915,
+    "note": "majoration estimée 345,75"
+  },
+  {
+    "obligation": "Complément TVA juillet 2026 (EN RETARD)",
+    "echeance": "2026-08-31",
+    "montant": 180,
+    "note": "pénalité estimée"
+  },
+  {
+    "obligation": "TVA août 2026",
+    "echeance": "2026-09-30",
+    "montant": 5816.51
+  },
+  {
+    "obligation": "IR salaires août 2026",
+    "echeance": "2026-09-30",
+    "montant": 4724.25
+  },
+  {
+    "obligation": "Retenue à la source revenus fonciers août",
+    "echeance": "2026-09-30",
+    "montant": 3000
+  },
+  {
+    "obligation": "Acompte provisionnel IS n°3 (25 % de l’IS 2025)",
+    "echeance": "2026-09-30",
+    "montant": 78100
+  },
+  {
+    "obligation": "Froid Service FS-2231",
+    "echeance": "2026-09-21",
+    "montant": 850
+  },
+  {
+    "obligation": "ElectroDistrib ED-75002 (délai légal dépassé)",
+    "echeance": "2026-06-09",
+    "montant": 115200
+  },
+  {
+    "obligation": "Déclaration délais de paiement T3",
+    "echeance": "2026-10-31",
+    "montant": null
+  }
+]

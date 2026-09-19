@@ -1,0 +1,13 @@
+article,designation,quantite,unite,cout_unitaire,devise,valeur
+ART-1001,Disjoncteur 16A modulaire,1850,u,42.50,MAD,78625.00
+ART-1002,Disjoncteur différentiel 40A 30mA,300,u,385.00,MAD,115500.00
+ART-1010,"Câble rigide 2,5 mm² (couronne 100 m)",-12,couronne,120.00,MAD,-1440.00
+ART-1011,"Câble souple 1,5 mm² (couronne 100 m)",310,couronne,96.00,MAD,29760.00
+ART-1020,Tableau électrique 4 rangées,160,u,690.00,MAD,110400.00
+ART-1030,Projecteur LED 150W étanche,540,u,248.00,MAD,133920.00
+ART-1031,Réglette LED 36W,2200,u,58.40,MAD,128480.00
+ART-1040,Goulotte PVC 60x40 (2 m),3100,u,31.20,MAD,96720.00
+ART-1050,Prises & interrupteurs (lot gamme Pro),1250,lot,64.00,MAD,80000.00
+ART-1060,Onduleur 3 kVA,12,u,4950.00,MAD,59400.00
+ART-1090,Lot fins de série (valorisation globale magasin),1,lot,39549.00,MAD,39549.00
+ART-2001,Lot LED import Shenzhen (reliquat INV-BW-2026-118),1,lot,4200.00,USD,4200.00

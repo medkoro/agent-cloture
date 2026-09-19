@@ -1,0 +1,19 @@
+{
+  "banque_alpha": {
+    "compte_gl": "51411",
+    "source": "PDF numérique + CSV banque",
+    "solde_initial": 486230.55,
+    "total_debit_imprime": 596558.79,
+    "total_credit_imprime": 461944.5,
+    "solde_final_imprime": 351616.26
+  },
+  "banque_omega": {
+    "compte_gl": "51412",
+    "source": "PDF scanné → extraction DocumentAI (CSV) — lignes non vérifiées",
+    "solde_initial": 212400.0,
+    "total_debit_imprime": 16324.81,
+    "total_credit_imprime": 50000.0,
+    "solde_final_imprime": 246075.19,
+    "note": "Les totaux et soldes imprimés ont été lus correctement par l’extraction."
+  }
+}

@@ -1,0 +1,10 @@
+__MACOSX/
+.DS_Store
+agent cl/.env
+agent cl/node_modules/
+agent cl/web/node_modules/
+agent cl/dist/
+agent cl/web/dist/
+agent cl/sessions/
+agent cl/sortie_agent/rapport_evaluation.json
+**/*.tmp

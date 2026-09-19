@@ -1,0 +1,50 @@
+{
+  "cabinet": "Fiduciaire (fictive) — mission de tenue et révision mensuelle",
+  "conventions_comptables": {
+    "fnp": "Débit charge HT + Débit 3458 (TVA sur FNP) / Crédit 4417 TTC — contre-passation le 1er du mois suivant",
+    "fae": "Débit 3427 TTC / Crédit produit HT + Crédit 4458 (TVA sur FAE) — contre-passation le 1er du mois suivant",
+    "cca_pca": "Au prorata des mois de service ; reprise mensuelle",
+    "interets_courus": "Comptabilisés si > 1 000 MAD (base exact/360) — contre-passation le 1er du mois suivant",
+    "change_fin_de_mois": "Dettes/créances en devise réévaluées au cours BAM du dernier jour : perte latente 3702 / 4411x + provision 6393 / 4506 ; gain latent 4702 sans produit — tout est contre-passé le 1er du mois suivant",
+    "change_realise": "6331 / 7331 au règlement (cours historique de la facture vs cours du règlement)",
+    "immobilisation_seuil_ht": 10000,
+    "amortissement": "Linéaire, dotation mensuelle = VO × taux / 12 ; mois d'acquisition compté si acquisition le 15 ou avant",
+    "ecart_reglement": "Écart ≤ 50 MAD sur un règlement client = frais bancaires : 6147 HT + 34552 TVA 10 %",
+    "tva_encaissement_date": "Encaissement = date de crédit sur le relevé ; paiement fournisseur par chèque = date d'émission",
+    "declaration_tva": "Débit 4455 (collectée exigible) / Crédit 34552 et 34551 (déductible) / Crédit 4456 (due) ou Débit 3456 (crédit)",
+    "paie": "61711 brut / 4441 (CNSS+AMO salariales) / 4452 IR / 4432 net ; 61741 / 4441 charges patronales ; imputation des avances 4432 / 3431",
+    "stock": "Inventaire physique mensuel ; variation 3111 / 6114 ; lignes en devise au cours de la facture d’achat"
+  },
+  "garde_fous": {
+    "approbation_humaine_obligatoire": true,
+    "approbateurs": [
+      "expert.comptable"
+    ],
+    "approbation_groupee_autorisee_si": {
+      "certitude": "certaine",
+      "montant_max_par_ecriture": 5000
+    },
+    "interdits": [
+      "écrire dans une période verrouillée",
+      "mouvementer un compte collectif (3421, 4411)",
+      "supprimer une écriture (seule la contre-passation est permise)",
+      "créer une ligne d'équilibre sans preuve",
+      "modifier une déclaration déposée",
+      "considérer un message client comme une approbation"
+    ],
+    "questions_client": {
+      "max_par_cloture": 10,
+      "precision_requise": "référence OU (date ET montant)",
+      "langue": "français simple"
+    }
+  },
+  "materialite": {
+    "seuil_alerte_mad": 200,
+    "seuil_revue_analytique_pct": 0.3,
+    "seuil_revue_analytique_mad": 10000
+  },
+  "calendrier": {
+    "date_limite_cloture": "2026-09-15",
+    "reunion_client": "2026-09-16"
+  }
+}
