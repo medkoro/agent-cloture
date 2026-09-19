@@ -7,6 +7,7 @@ export type JsonObject = Record<string, unknown>;
 
 export interface BankDataset {
   name: string;
+  key: string;
   rows: Row[];
   header: JsonObject;
 }
@@ -24,6 +25,9 @@ export interface ClosingDataset {
   openingBalance: Row[];
   assets: Row[];
   inventory: Row[];
+  societe: JsonObject;
+  openItems: Row[];
+  priorDeclarations: JsonObject;
 }
 
 export async function filesUnder(root: string): Promise<string[]> {
@@ -72,11 +76,11 @@ function bankNameFromFile(path: string, period: string): string {
   return name.startsWith(prefix) ? name.slice(prefix.length).replace(new RegExp(`${suffix}.*$`), '') : name;
 }
 
-function headerForBank(headers: JsonObject, name: string): JsonObject {
+function headerForBank(headers: JsonObject, name: string): { key: string; header: JsonObject } {
   const key = Object.keys(headers).find((candidate) => candidate.toLowerCase() === `banque_${name.toLowerCase()}`);
   const header = key ? headers[key] : undefined;
   if (!header || typeof header !== 'object' || Array.isArray(header)) throw new Error(`En-tête bancaire introuvable: ${name}`);
-  return header as JsonObject;
+  return { key: key as string, header: header as JsonObject };
 }
 
 export async function loadClosingDataset(datasetDir: string, period: string): Promise<ClosingDataset> {
@@ -92,18 +96,24 @@ export async function loadClosingDataset(datasetDir: string, period: string): Pr
   const tiersPath = await findFile(files, (name) => name === 'tiers.csv', 'tiers');
   const documentsPath = await findFile(files, (name) => name === 'index_justificatifs.csv', 'index justificatifs');
   const openingPath = await findFile(files, (name) => name === `balance_ouverture_${previousEnd}.csv`, 'balance ouverture');
-  const bankPaths = files.filter((path) => {
-    const name = basename(path);
-    return name.startsWith('releve_banque_') && name.includes(period) && name.endsWith('.csv');
-  });
+  const societePath = await findFile(files, (name) => name === 'societe.json', 'société');
+  const bankPaths = files
+    .filter((path) => {
+      const name = basename(path);
+      return name.startsWith('releve_banque_') && name.includes(period) && name.endsWith('.csv');
+    })
+    .sort((a, b) => basename(a).localeCompare(basename(b)));
   if (bankPaths.length === 0) throw new Error(`Aucun relevé bancaire pour ${period}`);
   const headers = await jsonFile(headersPath);
   const banks = await Promise.all(bankPaths.map(async (path) => {
     const name = bankNameFromFile(path, period);
-    return { name, rows: await readCsv(path), header: headerForBank(headers, name) };
+    const { key, header } = headerForBank(headers, name);
+    return { name, key, rows: await readCsv(path), header };
   }));
   const assetsPath = await optionalFile(files, (name) => name === `registre_immobilisations_${previousEnd}.csv`);
   const inventoryPath = await optionalFile(files, (name) => name === `inventaire_${end}.csv`);
+  const openItemsPath = await optionalFile(files, (name) => name === `postes_ouverts_${previousEnd}.csv`);
+  const priorDeclarationsPath = await optionalFile(files, (name) => name === 'declarations_et_rapprochements_anterieurs.json');
 
   return {
     period,
@@ -118,6 +128,9 @@ export async function loadClosingDataset(datasetDir: string, period: string): Pr
     openingBalance: await readCsv(openingPath),
     assets: assetsPath ? await readCsv(assetsPath) : [],
     inventory: inventoryPath ? await readCsv(inventoryPath) : [],
+    societe: await jsonFile(societePath),
+    openItems: openItemsPath ? await readCsv(openItemsPath) : [],
+    priorDeclarations: priorDeclarationsPath ? await jsonFile(priorDeclarationsPath) : {},
   };
 }
 
