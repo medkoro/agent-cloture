@@ -1,5 +1,5 @@
 import type { Anomaly, Output } from '../contracts/output.js';
-import { matchBankEntries, reconcileBank } from './bank.js';
+import { matchBankEntries, reconcileBank } from './bank_engine.js';
 import { calculateAssets } from './assets.js';
 import { loadClosingDataset, nextMonthEnd, type ClosingDataset, type Row } from './dataset.js';
 import { calculateVat } from './vat.js';

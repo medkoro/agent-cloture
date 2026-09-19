@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ClosingEngine } from '../src/engine/closing_engine.js';
 import { loadClosingDataset } from '../src/engine/dataset.js';
 import { checkLedgerIntegrity } from '../src/engine/integrity.js';
+import { detectInternalTransfers, detectTruncations, verifyStatementChecksum, type StatementChecksum } from '../src/engine/bank_engine.js';
 import { OutputSchema } from '../src/contracts/output.js';
 
 const dataset = new URL('../../datasets/atlas_negoce/', import.meta.url).pathname.replace(/^\//, '').replace(/\//g, '\\');
@@ -60,5 +61,83 @@ describe('integrite du grand livre', () => {
     const ok = [{ ecriture_id: 'E1', piece: 'P1', date_ecriture: '2026-08-01', compte: '6133', debit: '10', credit: '0' },
                 { ecriture_id: 'E1', piece: 'P1', date_ecriture: '2026-08-01', compte: '44110001', debit: '0', credit: '10' }];
     expect(checkLedgerIntegrity(ok, chart, '2026-07-31')).toEqual([]);
+  });
+});
+
+describe('bank_engine', () => {
+  it('verifie la coherence des totaux imprimes', () => {
+    const header = { solde_initial: 1000, total_debit_imprime: 500, total_credit_imprime: 300, solde_final_imprime: 800 };
+    const rows = [{ id_ligne: 'X1', debit: '500.00', credit: '0' }, { id_ligne: 'X2', debit: '0', credit: '300.00' }];
+    expect(verifyStatementChecksum(header, rows).coherent).toBe(true);
+    const rowsTronques = [{ id_ligne: 'X1', debit: '100.00', credit: '0' }, { id_ligne: 'X2', debit: '0', credit: '300.00' }];
+    expect(verifyStatementChecksum(header, rowsTronques).ecart_debit).toBe(400);
+  });
+  it('identifie la troncature OCR par rapprochement avec la facture du grand livre', () => {
+    const checksum = { ecart_debit: 4000, ecart_credit: 0, ecart_solde: 4000 } as StatementChecksum;
+    const rows = [{ id_ligne: 'O3', libelle: 'VIR EMIS FOURN TE-5521', debit: '365.12', credit: '0' }];
+    const ledger = [
+      { piece: 'TE-5521', compte: '6142', debit: '3637.60', credit: '0' },
+      { piece: 'TE-5521', compte: '34552', debit: '727.52', credit: '0' },
+      { piece: 'TE-5521', compte: '44110012', debit: '0', credit: '4365.12' },
+    ];
+    const found = detectTruncations({ key: 'banque_omega', rows }, checksum, ledger);
+    expect(found).toEqual([{ banque: 'banque_omega', id_ligne: 'O3', piece: 'TE-5521', montant_extrait: 365.12, montant_corrige: 4365.12, ecart: 4000 }]);
+  });
+  it('detecte les virements internes entre comptes propres', () => {
+    const a = { key: 'banque_alpha', rows: [{ id_ligne: 'A13', date_operation: '2026-08-19', libelle: 'VIR EMIS VERS AUTRE COMPTE', debit: '50000.00', credit: '0' }] };
+    const b = { key: 'banque_omega', rows: [{ id_ligne: 'O2', date_operation: '2026-08-19', libelle: 'VIR RECU AUTRE COMPTE', debit: '0', credit: '50000.00' }] };
+    expect(detectInternalTransfers([a, b])).toEqual([{ montant: 50000, date: '2026-08-19', source: { key: 'banque_alpha', id_ligne: 'A13' }, cible: { key: 'banque_omega', id_ligne: 'O2' } }]);
+  });
+  it('traite les champs den-tete manquants comme zero', () => {
+    const summary = verifyStatementChecksum({}, [{ id_ligne: 'X1', debit: '0', credit: '0' }]);
+    expect(summary).toMatchObject({ ecart_debit: 0, ecart_credit: 0, ecart_solde: 0, coherent: true });
+  });
+  it('scanne le sens credit quand lecart porte sur les credits', () => {
+    const checksum = { ecart_debit: 0, ecart_credit: 4000, ecart_solde: 4000 } as StatementChecksum;
+    const rows = [{ id_ligne: 'O4', libelle: 'VIR RECU CLIENT TE-5521', debit: '0', credit: '365.12' }];
+    const ledger = [
+      { piece: 'TE-5521', compte: '6142', debit: '3637.60', credit: '0' },
+      { piece: 'TE-5521', compte: '34552', debit: '727.52', credit: '0' },
+      { piece: 'TE-5521', compte: '44110012', debit: '0', credit: '4365.12' },
+    ];
+    const found = detectTruncations({ key: 'banque_omega', rows }, checksum, ledger);
+    expect(found).toEqual([{ banque: 'banque_omega', id_ligne: 'O4', piece: 'TE-5521', montant_extrait: 365.12, montant_corrige: 4365.12, ecart: 4000 }]);
+  });
+  it('detecte des troncatures debit et credit simultanees', () => {
+    const checksum = { ecart_debit: 4000, ecart_credit: 1000, ecart_solde: 5000 } as StatementChecksum;
+    const rows = [
+      { id_ligne: 'O3', libelle: 'VIR EMIS FOURN TE-5521', debit: '365.12', credit: '0' },
+      { id_ligne: 'O6', libelle: 'VIR RECU CLIENT TE-5530', debit: '0', credit: '222.00' },
+    ];
+    const ledger = [
+      { piece: 'TE-5521', compte: '44110012', debit: '0', credit: '4365.12' },
+      { piece: 'TE-5530', compte: '44110014', debit: '0', credit: '1222.00' },
+    ];
+    const found = detectTruncations({ key: 'banque_omega', rows }, checksum, ledger);
+    expect(found).toEqual([
+      { banque: 'banque_omega', id_ligne: 'O3', piece: 'TE-5521', montant_extrait: 365.12, montant_corrige: 4365.12, ecart: 4000 },
+      { banque: 'banque_omega', id_ligne: 'O6', piece: 'TE-5530', montant_extrait: 222, montant_corrige: 1222, ecart: 1000 },
+    ]);
+  });
+  it('ignore une incoherence a la centime pres', () => {
+    const checksum = { ecart_debit: 4000, ecart_credit: 0, ecart_solde: 4000 } as StatementChecksum;
+    const rows = [{ id_ligne: 'O3', libelle: 'VIR EMIS FOURN TE-5521', debit: '365.13', credit: '0' }];
+    const ledger = [{ piece: 'TE-5521', compte: '44110012', debit: '0', credit: '4365.12' }];
+    expect(detectTruncations({ key: 'banque_omega', rows }, checksum, ledger)).toEqual([]);
+  });
+  it('ne consomme une ligne que par un seul virement', () => {
+    const a = { key: 'banque_alpha', rows: [{ id_ligne: 'A13', date_operation: '2026-08-19', debit: '50000.00', credit: '0' }] };
+    const b = { key: 'banque_omega', rows: [
+      { id_ligne: 'O2', date_operation: '2026-08-19', debit: '0', credit: '50000.00' },
+      { id_ligne: 'O5', date_operation: '2026-08-19', debit: '0', credit: '50000.00' },
+    ] };
+    const found = detectInternalTransfers([a, b]);
+    expect(found).toHaveLength(1);
+    expect(found[0]).toMatchObject({ source: { key: 'banque_alpha', id_ligne: 'A13' }, cible: { key: 'banque_omega', id_ligne: 'O2' } });
+  });
+  it('ignore les virements de dates differentes', () => {
+    const a = { key: 'banque_alpha', rows: [{ id_ligne: 'A13', date_operation: '2026-08-19', debit: '50000.00', credit: '0' }] };
+    const b = { key: 'banque_omega', rows: [{ id_ligne: 'O2', date_operation: '2026-08-20', debit: '0', credit: '50000.00' }] };
+    expect(detectInternalTransfers([a, b])).toEqual([]);
   });
 });

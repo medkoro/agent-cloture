@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { calculateAssets } from '../src/engine/assets.js';
-import { matchBankEntries } from '../src/engine/bank.js';
+import { matchBankEntries } from '../src/engine/bank_engine.js';
 import { cutoffRules } from '../src/engine/cutoff.js';
 import { calculateForex } from '../src/engine/forex.js';
 
