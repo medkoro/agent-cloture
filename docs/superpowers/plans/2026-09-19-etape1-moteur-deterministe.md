@@ -26,7 +26,7 @@
 - Écriture déséquilibrée : `OD-2026-08-0142` (1 ligne, écart 850). Période verrouillée : `OD-2026-07-0093` (datée 2026-07-28 ≤ 2026-07-31, saisie le 19/08, sur 4411 sans tiers).
 - Relevé Omega : totaux imprimés (16 324,81 débit) ≠ somme extraite (12 324,81) → écart 4 000 = troncature OCR de O03 (4 365,12 → 365,12, facture TE-5521 dans le GL).
 - Virement interne : A13 (débit 50 000 Alpha) ↔ O02 (crédit 50 000 Omega), même date.
-- TVA attendue : 55 000 collectée (reconstruction par encaissements, rejet A15↔A23 exclu, virement interne exclu, caution A25 hors champ, remise RCHQ-0831 non créditée exclue) ; déductible 46 283,49 + 2 900 immo. Data-only sans annotations : charges = 52 083,49 (IT-2026-0933 : 5 800 sur 34552), due = **2 916,51** ; avec annotation usage personnel 2 900 → due = **5 816,51** (l'écart Dell immo/charges relève de l'étape 2).
+- TVA attendue : 55 000 collectée (reconstruction par encaissements, rejet A15↔A23 exclu, virement interne exclu, caution A25 hors champ, remise RCHQ-0831 non créditée exclue) ; déductible 46 283,49 + 2 900 immo. Data-only sans annotations : charges = 51 883,49 (IT-2026-0933 : 5 800 sur 34552), due = **3 116,51** ; avec annotation usage personnel 2 900 → due = **6 016,51** (l'écart Dell immo/charges et la NDF Hôtel 200 relèvent de l'étape 2).
 - Espèces TE-5498 : 12 000 payé, plafond 5 000/jour/fournisseur (`parametres_fiscaux.tva.reglement_especes`) → TVA = 2 000 × 5 000/12 000 = 833,33.
 - Écart de règlement ≤ 50 (extrait de `politique_cabinet.conventions_comptables.ecart_reglement` par regex `≤\s*(\d+)`) → facture soldée + TVA 10 % sur l'écart (`taux_par_nature.frais_bancaires`).
 - GL August ACH entry for REG-2026-07-88120 exists (E-2026-08-0006) — les factures fournisseurs du mois se trouvent dans le GL (TTC = Σcrédits sur comptes fils de 4411, TVA = Σdébit 34552/34551) et dans `postes_ouverts_*.csv` pour les mois antérieurs.
@@ -257,8 +257,8 @@ describe('integration atlas (fixture)', () => {
   it('reconstruit la tva encaissement depuis les donnees', async () => {
     const output = await run();
     expect(output.tva.tva_collectee_exigible).toBe(55000);
-    expect(output.tva.tva_deductible_charges).toBe(52083.49);   // data-only, IT-2026-0933 entier sur 34552
-    expect(output.tva.tva_due).toBe(2916.51);
+    expect(output.tva.tva_deductible_charges).toBe(51883.49);   // data-only, IT-2026-0933 entier sur 34552 ; Hôtel NDF 200 = proposition P-36 (étape 2), hors entrées du moteur
+    expect(output.tva.tva_due).toBe(3116.51);
   });
   it('clee les rapprochements par les cles canoniques et typpe les suspens', async () => {
     const output = await run();
@@ -276,7 +276,7 @@ describe('integration atlas (fixture)', () => {
 });
 ```
 
-- [ ] **Étape 2 — FAIL** ; **Étape 3 — implémenter la coordination + contrat** ; **Étape 4 — vérification complète :** `npm test` (tous les tests, anciens + nouveaux), `npm run typecheck`, puis `$env:LLM_PROVIDER='deterministic'; npm run cloture -- --dossier atlas_negoce --periode 2026-08` et vérifier `sortie_agent/tva.json` (due 2 916,51) et `rapprochements.json` (clés `banque_*`) ; **Étape 5 — commit** : `feat(engine): coordination moteur deterministe et structures exploitables par les outils`
+- [ ] **Étape 2 — FAIL** ; **Étape 3 — implémenter la coordination + contrat** ; **Étape 4 — vérification complète :** `npm test` (tous les tests, anciens + nouveaux), `npm run typecheck`, puis `$env:LLM_PROVIDER='deterministic'; npm run cloture -- --dossier atlas_negoce --periode 2026-08` et vérifier `sortie_agent/tva.json` (due 3 116,51) et `rapprochements.json` (clés `banque_*`) ; **Étape 5 — commit** : `feat(engine): coordination moteur deterministe et structures exploitables par les outils`
 
 ---
 
@@ -284,4 +284,4 @@ describe('integration atlas (fixture)', () => {
 
 - **Couverture du prompt :** dataset dynamique ✓ (T1, aucun chemin/nom en dur — tous les `findFile` restent par motifs), intégrité 3 contrôles ✓ (T2), checksums + troncature + 5115 ✓ (T3-T4), TVA encaissement avec espèces/non-déductible ✓ (T5), coordination + zéro arithmétique LLM ✓ (T6), tests dans `tests/engine.test.ts` ✓.
 - **Cohérence de types :** `InternalTransfer`/`TruncationFinding`/`SuspensItem` définis en T3-T4, consommés en T5-T6 avec signatures identiques ; `VatResult` inchangé (compatibilité `TvaSchema` zod).
-- **Risques assumés :** TVA data-only ≠ attendu sur le split charges/immo (Dell/MacBook → étape 2, test documente 2 916,51 vs 5 816,51 après annotation) ; imputation par nom de tiers = heuristique documentée (tokens normalisés sans accents).
+- **Risques assumés :** TVA data-only ≠ attendu sur le split charges/immo (Dell/MacBook → étape 2, test documente 3 116,51 vs 6 016,51 après annotation) ; NDF Hôtel 200 hors entrées moteur (proposition P-36, étape 2) ; imputation par nom de tiers = heuristique documentée (tokens normalisés sans accents).

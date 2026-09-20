@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { ClosingEngine } from '../src/engine/closing_engine.js';
-import { loadClosingDataset } from '../src/engine/dataset.js';
+import { loadClosingDataset, nextMonthEnd } from '../src/engine/dataset.js';
 import { checkLedgerIntegrity } from '../src/engine/integrity.js';
-import { detectInternalTransfers, detectTruncations, matchBankToLedger, verifyStatementChecksum, type StatementChecksum } from '../src/engine/bank_engine.js';
+import { detectInternalTransfers, detectTruncations, matchBankToLedger, verifyStatementChecksum, type StatementChecksum, type SuspensItem } from '../src/engine/bank_engine.js';
+import { calculateVatEncaissement, vatAccountTypes } from '../src/engine/vat_engine.js';
 import { OutputSchema } from '../src/contracts/output.js';
 
 const dataset = new URL('../../datasets/atlas_negoce/', import.meta.url).pathname.replace(/^\//, '').replace(/\//g, '\\');
@@ -216,5 +217,199 @@ describe('matchBankToLedger', () => {
       { type: 'non_categorise', id_ligne: 'A42', libelle: 'VIR SPONTANE INEXPLIQUE', montant: 300, date: '2026-08-12' },
       { type: 'encaissement_non_comptabilise', id_ligne: 'A43', libelle: 'VIR RECU ENCAISSEMENT LIBRE', montant: 900, date: '2026-08-13' },
     ]);
+  });
+});
+
+describe('vat_engine régime encaissement', () => {
+  const chart = [
+    { code: '3421', libelle: 'Clients (collectif)', compte_parent: '' },
+    { code: '34210001', libelle: 'Clients — Anfa Park', compte_parent: '3421' },
+    { code: '34210004', libelle: 'Clients — Clinique Al Amal', compte_parent: '3421' },
+    { code: '4411', libelle: 'Fournisseurs (collectif)', compte_parent: '' },
+    { code: '44110012', libelle: 'Fournisseurs — Transit Express', compte_parent: '4411' },
+    { code: '44110010', libelle: 'Fournisseurs — InfoTech', compte_parent: '4411' },
+    { code: '34552', libelle: 'État — TVA récupérable sur charges', compte_parent: '' },
+    { code: '34551', libelle: 'État — TVA récupérable sur les immobilisations', compte_parent: '' },
+    { code: '4455', libelle: 'État — TVA facturée', compte_parent: '' },
+    { code: '5161', libelle: 'Caisse', compte_parent: '' },
+    { code: '6125', libelle: 'Achats non stockés (carburant)', compte_parent: '' },
+  ];
+
+  const baseInput = {
+    banks: [],
+    ledger: [],
+    openItems: [],
+    tiers: [],
+    chart,
+    fiscal: {
+      tva: {
+        regime_dossier: 'encaissement',
+        taux_par_nature: { frais_bancaires: 10 },
+        non_deductible: ['carburant des véhicules de tourisme'],
+        reglement_especes: { plafond_deductible_par_jour_et_fournisseur: 5000 },
+      },
+    },
+    policy: { conventions_comptables: { ecart_reglement: 'Écart ≤ 50 MAD sur un règlement client = frais bancaires : 6147 HT + 34552 TVA 10 %' } },
+    societe: { caisse: { compte: '5161' } },
+    transfers: [],
+    truncations: [],
+    suspens: {},
+    period: '2026-08',
+    dueDate: '2026-09-30',
+  };
+
+  it('proratise la TVA déductible des espèces au plafond journalier (2 000 × 5 000/12 000 = 833,33)', () => {
+    const result = calculateVatEncaissement({
+      ...baseInput,
+      openItems: [{ tiers: 'F012', piece: 'TE-5498', date_piece: '2026-08-14', montant_ttc: '12000.00', dont_tva: '2000.00' }],
+      tiers: [{ code: 'F012', type: 'fournisseur', nom: 'Transit Express SARL', compte: '44110012' }],
+      ledger: [{ piece: 'TE-5498', compte: '5161', debit: '0', credit: '12000.00' }],
+    });
+    expect(result.tva_deductible_charges).toBe(833.33);
+    expect(result.tva_deductible_immobilisations).toBe(0);
+    expect(result.imputations_deductible).toContainEqual(expect.objectContaining({
+      facture: 'TE-5498',
+      tiers: 'F012',
+      montant_impute: 12000,
+      tva: 833.33,
+      statut: 'partiel',
+    }));
+  });
+
+  it('impute un encaissement partiel au prorata (10 000 × 14 000/60 000 = 2 333,33)', () => {
+    const result = calculateVatEncaissement({
+      ...baseInput,
+      banks: [{ key: 'banque_alpha', rows: [{ id_ligne: 'A05', date_operation: '2026-08-07', libelle: 'VIR RECU CLINIQUE AL AMAL SA', debit: '0', credit: '14000.00' }] }],
+      openItems: [{ tiers: 'C004', piece: 'FAC-2026-0421', date_piece: '2026-07-02', montant_ttc: '60000.00', dont_tva: '10000.00' }],
+      tiers: [{ code: 'C004', type: 'client', nom: 'Clinique Al Amal SA', compte: '34210004' }],
+    });
+    expect(result.tva_collectee_exigible).toBe(2333.33);
+    expect(result.tva_due).toBe(2333.33);
+    expect(result.imputations_collectee).toContainEqual(expect.objectContaining({
+      facture: 'FAC-2026-0421',
+      tiers: 'C004',
+      montant_impute: 14000,
+      tva: 2333.33,
+      statut: 'partiel',
+    }));
+  });
+
+  it('soustrait tva_exclue de la TVA de la pièce annotée (statut annotation_exclue, motif conservé)', () => {
+    const result = calculateVatEncaissement({
+      ...baseInput,
+      banks: [{ key: 'banque_alpha', rows: [{ id_ligne: 'A08', date_operation: '2026-08-12', libelle: 'VIR EMIS INFOTECH DISTRIBUTION IT-2026-0933', debit: '34800.00', credit: '0' }] }],
+      openItems: [{ tiers: 'F010', piece: 'IT-2026-0933', date_piece: '2026-08-12', montant_ttc: '34800.00', dont_tva: '5800.00' }],
+      tiers: [{ code: 'F010', type: 'fournisseur', nom: 'InfoTech Distribution SARL', compte: '44110010' }],
+      annotations: [{ piece: 'IT-2026-0933', tva_exclue: 2900, motif: 'ordinateur portable à usage personnel' }],
+    });
+    expect(result.tva_deductible_charges).toBe(2900);
+    expect(result.imputations_deductible).toContainEqual(expect.objectContaining({
+      facture: 'IT-2026-0933',
+      tva: 2900,
+      statut: 'annotation_exclue',
+      motif: 'ordinateur portable à usage personnel',
+    }));
+  });
+
+  it('exclut la TVA d une facture dont la ligne de charge est sur un compte non déductible (carburant)', () => {
+    const result = calculateVatEncaissement({
+      ...baseInput,
+      tiers: [{ code: 'F001', type: 'fournisseur', nom: 'Fournisseur X', compte: '44110001' }],
+      openItems: [{ tiers: 'F001', piece: 'TK-0808', date_piece: '2026-08-08', montant_ttc: '600.00', dont_tva: '100.00' }],
+      ledger: [{ piece: 'TK-0808', compte: '5161', debit: '0', credit: '600.00' }],
+    });
+    expect(result.tva_deductible_charges).toBe(0);
+  });
+
+  it('soude une facture presque soldée si l écart est ≤ seuil, TVA pleine + TVA 10 % déductible sur l écart', () => {
+    const result = calculateVatEncaissement({
+      ...baseInput,
+      banks: [{ key: 'banque_alpha', rows: [{ id_ligne: 'A22', date_operation: '2026-08-29', libelle: 'VIR RECU GRP IMMOBILIER ANFA PARK FAC 0426', debit: '0', credit: '71982.00' }] }],
+      openItems: [{ tiers: 'C001', piece: 'FAC-2026-0426', date_piece: '2026-08-12', montant_ttc: '72000.00', dont_tva: '12000.00' }],
+      tiers: [{ code: 'C001', type: 'client', nom: 'Groupe Immobilier Anfa Park SA', compte: '34210001' }],
+    });
+    expect(result.tva_collectee_exigible).toBe(12000);
+    expect(result.tva_deductible_charges).toBe(1.64);
+    expect(result.imputations_collectee).toContainEqual(expect.objectContaining({ facture: 'FAC-2026-0426', tva: 12000, statut: 'total' }));
+  });
+
+  it('calcule la TVA due du dossier atlas_negoce (55 000 − 51 883,49 = 3 116,51)', async () => {
+    const ds = await loadClosingDataset(dataset, '2026-08');
+    const transfers = detectInternalTransfers(ds.banks.map((bank) => ({ key: bank.key, rows: bank.rows })));
+    const truncations = ds.banks.flatMap((bank) => detectTruncations(
+      { key: bank.key, rows: bank.rows },
+      verifyStatementChecksum(bank.header, bank.rows),
+      ds.ledger,
+      ds.chart,
+    ));
+    const suspens: Record<string, SuspensItem[]> = {};
+    for (const bank of ds.banks) {
+      suspens[bank.key] = matchBankToLedger({ key: bank.key, rows: bank.rows }, ds.ledger, String(bank.header.compte_gl)).suspens;
+    }
+    const input = {
+      banks: ds.banks.map((bank) => ({ key: bank.key, rows: bank.rows })),
+      ledger: ds.ledger,
+      openItems: ds.openItems,
+      tiers: ds.tiers,
+      chart: ds.chart,
+      fiscal: ds.fiscal,
+      policy: ds.policy,
+      societe: ds.societe,
+      transfers,
+      truncations,
+      suspens,
+      period: ds.period,
+      dueDate: nextMonthEnd(ds.period),
+    };
+    const result = calculateVatEncaissement(input);
+    expect(result.tva_collectee_exigible).toBe(55000);
+    expect(result.tva_deductible_charges).toBe(51883.49);
+    expect(result.tva_deductible_immobilisations).toBe(0);
+    expect(result.tva_due).toBe(3116.51);
+    expect(result.imputations_collectee.find((item) => item.facture === 'FAC-2026-0412')).toMatchObject({ statut: 'total', tva: 19800 });
+    expect(result.imputations_collectee.find((item) => item.facture === 'A25')).toMatchObject({ statut: 'hors_champ', tva: 0 });
+    expect(result.imputations_collectee.find((item) => item.facture === 'FAC-2025-0877')).toMatchObject({ statut: 'rejet', tva: 0 });
+    expect(result.imputations_deductible.find((item) => item.facture === 'ED-77812')).toMatchObject({ statut: 'total', tva: 35760 });
+    expect(result.imputations_deductible.find((item) => item.facture === 'TE-5498')).toMatchObject({ statut: 'partiel', tva: 833.33 });
+  });
+
+  it('applique l annotation IT-2026-0933 sur le dossier (51 883,49 − 2 900 = 48 983,49)', async () => {
+    const ds = await loadClosingDataset(dataset, '2026-08');
+    const transfers = detectInternalTransfers(ds.banks.map((bank) => ({ key: bank.key, rows: bank.rows })));
+    const truncations = ds.banks.flatMap((bank) => detectTruncations(
+      { key: bank.key, rows: bank.rows },
+      verifyStatementChecksum(bank.header, bank.rows),
+      ds.ledger,
+      ds.chart,
+    ));
+    const suspens: Record<string, SuspensItem[]> = {};
+    for (const bank of ds.banks) {
+      suspens[bank.key] = matchBankToLedger({ key: bank.key, rows: bank.rows }, ds.ledger, String(bank.header.compte_gl)).suspens;
+    }
+    const input = {
+      banks: ds.banks.map((bank) => ({ key: bank.key, rows: bank.rows })),
+      ledger: ds.ledger,
+      openItems: ds.openItems,
+      tiers: ds.tiers,
+      chart: ds.chart,
+      fiscal: ds.fiscal,
+      policy: ds.policy,
+      societe: ds.societe,
+      transfers,
+      truncations,
+      suspens,
+      period: ds.period,
+      dueDate: nextMonthEnd(ds.period),
+      annotations: [{ piece: 'IT-2026-0933', tva_exclue: 2900, motif: 'ordinateur portable à usage personnel' }],
+    };
+    const result = calculateVatEncaissement(input);
+    expect(result.tva_deductible_charges).toBe(48983.49);
+    expect(result.tva_due).toBe(6016.51);
+    expect(result.imputations_deductible).toContainEqual(expect.objectContaining({
+      facture: 'IT-2026-0933',
+      tva: 2900,
+      statut: 'annotation_exclue',
+      motif: 'ordinateur portable à usage personnel',
+    }));
   });
 });

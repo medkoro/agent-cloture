@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateVat } from '../src/engine/vat.js';
+import { calculateVat } from '../src/engine/vat_engine.js';
 
 describe('calculateVat', () => {
   it('calculates VAT from the supplied ledger rows', () => {

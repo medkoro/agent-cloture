@@ -2,7 +2,7 @@ import type { Anomaly, Output } from '../contracts/output.js';
 import { matchBankEntries, reconcileBank } from './bank_engine.js';
 import { calculateAssets } from './assets.js';
 import { loadClosingDataset, nextMonthEnd, type ClosingDataset, type Row } from './dataset.js';
-import { calculateVat } from './vat.js';
+import { calculateVat, vatAccountTypes } from './vat_engine.js';
 
 const numberValue = (value: unknown): number => {
   const parsed = Number(value ?? 0);
@@ -69,21 +69,6 @@ function policyMaximumQuestions(dataset: ClosingDataset): number {
   return Number.isInteger(configured) && configured >= 0 ? configured : 0;
 }
 
-function vatAccountTypes(dataset: ClosingDataset): { collected: string[]; charges: string[]; immobilisations: string[] } {
-  const normalized = (value: string): string => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const collected: string[] = [];
-  const charges: string[] = [];
-  const immobilisations: string[] = [];
-  for (const row of dataset.chart) {
-    const label = normalized(row.libelle ?? '');
-    if (!label.includes('tva')) continue;
-    if (label.includes('facturee') || label.includes('collectee')) collected.push(row.code);
-    else if (label.includes('recuperable') && label.includes('immobil')) immobilisations.push(row.code);
-    else if (label.includes('recuperable')) charges.push(row.code);
-  }
-  return { collected, charges, immobilisations };
-}
-
 function questionsFor(anomalies: Anomaly[], maximum: number): Output['questions'] {
   return anomalies.slice(0, maximum).map((item) => ({
     id: item.id,
@@ -109,7 +94,7 @@ export class ClosingEngine {
       ledger: dataset.ledger,
       periodEnd: dataset.periodEnd,
       dueDate: nextMonthEnd(this.period),
-      accountTypes: vatAccountTypes(dataset),
+      accountTypes: vatAccountTypes(dataset.chart),
       nonDeductible: Array.isArray(tvaConfig?.non_deductible) ? tvaConfig.non_deductible.filter((value): value is string => typeof value === 'string') : [],
     });
     if (tva.regime.toLowerCase() === 'encaissement') {
