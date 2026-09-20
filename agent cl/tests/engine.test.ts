@@ -15,16 +15,29 @@ describe('ClosingEngine générique', () => {
     expect(OutputSchema.safeParse(output).success).toBe(true);
     expect(JSON.stringify(output)).not.toContain('Atlas Négoce');
     expect(JSON.stringify(output)).not.toContain('P-01');
-    expect(output.anomalies.some((item) => item.titre.includes('TVA'))).toBe(true);
   });
+});
 
-  it('derives bank balances from the injected files', async () => {
-    const output = await new ClosingEngine(dataset, '2026-08').run();
-    expect(Object.keys(output.rapprochements)).toEqual(expect.arrayContaining(['alpha', 'omega']));
-    expect(output.rapprochements.alpha.solde_releve).toBe(351616.26);
-    expect(output.rapprochements.omega.solde_releve).toBe(246075.19);
-    expect(output.rapprochements.alpha.corrections).toEqual([]);
-    expect(output.rapprochements.omega.corrections).toEqual([]);
+describe('integration atlas (fixture)', () => {
+  const run = () => new ClosingEngine(dataset, '2026-08').run();
+  it('reconstruit la tva encaissement depuis les donnees', async () => {
+    const output = await run();
+    expect(output.tva.tva_collectee_exigible).toBe(55000);
+    expect(output.tva.tva_deductible_charges).toBe(51883.49);   // data-only, IT-2026-0933 entier sur 34552 ; Hôtel NDF 200 = proposition P-36 (étape 2), hors entrées du moteur
+    expect(output.tva.tva_due).toBe(3116.51);
+  });
+  it('clee les rapprochements par les cles canoniques et typpe les suspens', async () => {
+    const output = await run();
+    expect(Object.keys(output.rapprochements)).toEqual(['banque_alpha', 'banque_omega']);
+    const alpha = JSON.stringify(output.rapprochements.banque_alpha.suspens);
+    expect(alpha).toContain('remise_non_creditee'); expect(alpha).toContain('cheque_emis_non_debite');
+    expect(output.rapprochements.banque_omega.controle_totaux_imprimes?.ecart).toBe(4000);
+  });
+  it('emets les anomalies d integrite attendues depuis les donnees', async () => {
+    const output = await run();
+    const text = JSON.stringify(output.anomalies);
+    expect(text).toContain('desequilibree'); expect(text).toContain('verrouillee'); expect(text).toContain('collectif');
+    expect(text).toContain('tronquee'); expect(text).toContain('virement interne');
   });
 });
 

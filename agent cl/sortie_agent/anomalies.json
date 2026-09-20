@@ -1,56 +1,67 @@
 [
   {
     "id": "ANO-001",
-    "titre": "Mouvement bancaire non rapproché (alpha)",
-    "description": "Le mouvement A02 porte le statut non rapprochée et ne permet pas de générer une écriture corrective.",
-    "gravite": "moyenne",
+    "titre": "Periode verrouillee",
+    "description": "L’écriture E-2026-08-0001 est datée dans une période verrouillée ; aucune écriture corrective n’est générée.",
+    "gravite": "bloquante",
     "preuves": [
-      "BQ:alpha:A02"
+      "GL:OD-2026-07-0093"
     ],
     "question": null
   },
   {
     "id": "ANO-002",
-    "titre": "Mouvement bancaire non rapproché (alpha)",
-    "description": "Le mouvement A10 porte le statut non catégorisée et ne permet pas de générer une écriture corrective.",
-    "gravite": "moyenne",
+    "titre": "Ecriture sur compte collectif",
+    "description": "L’écriture E-2026-08-0001 mouvemente le compte collectif 4411 ; aucune écriture corrective n’est générée.",
+    "gravite": "haute",
     "preuves": [
-      "BQ:alpha:A10"
+      "GL:OD-2026-07-0093"
     ],
     "question": null
   },
   {
     "id": "ANO-003",
-    "titre": "Mouvement bancaire non rapproché (alpha)",
-    "description": "Le mouvement A23 porte le statut non catégorisée et ne permet pas de générer une écriture corrective.",
-    "gravite": "moyenne",
+    "titre": "Ecriture desequilibree",
+    "description": "L’écriture E-2026-08-0031 présente un écart de 850 MAD ; aucune écriture corrective n’est générée.",
+    "gravite": "bloquante",
     "preuves": [
-      "BQ:alpha:A23"
+      "GL:E-2026-08-0031"
     ],
     "question": null
   },
   {
     "id": "ANO-004",
-    "titre": "Mouvement bancaire non rapproché (alpha)",
-    "description": "Le mouvement A24 porte le statut non catégorisée et ne permet pas de générer une écriture corrective.",
-    "gravite": "moyenne",
+    "titre": "Totaux du relevé incohérents avec les lignes extraites",
+    "description": "Les totaux imprimés du relevé banque_omega ne correspondent pas à la somme des lignes extraites ; les montants extraits doivent être confirmés.",
+    "gravite": "haute",
     "preuves": [
-      "BQ:alpha:A24"
+      "BQ:banque_omega"
     ],
     "question": null
   },
   {
     "id": "ANO-005",
-    "titre": "Mouvement bancaire non rapproché (omega)",
-    "description": "Le mouvement O04 porte le statut non catégorisée et ne permet pas de générer une écriture corrective.",
-    "gravite": "moyenne",
+    "titre": "Extraction tronquee",
+    "description": "La ligne O03 a été extraite à 365.12 MAD au lieu de 4365.12 MAD (pièce TE-5521) ; le montant corrigé est proposé.",
+    "gravite": "haute",
     "preuves": [
-      "BQ:omega:O04"
+      "BQ:banque_omega:O03"
     ],
     "question": null
   },
   {
     "id": "ANO-006",
+    "titre": "Mouvement de virement interne a comptabiliser via virements de fonds",
+    "description": "Le mouvement A13 (banque_alpha) vers O02 (banque_omega) de 50000 MAD doit transiter par les virements de fonds.",
+    "gravite": "haute",
+    "preuves": [
+      "BQ:banque_alpha:A13",
+      "BQ:banque_omega:O02"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-007",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce OD-2026-07-0093 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -61,7 +72,7 @@
     "question": null
   },
   {
-    "id": "ANO-007",
+    "id": "ANO-008",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A01 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -72,7 +83,7 @@
     "question": null
   },
   {
-    "id": "ANO-008",
+    "id": "ANO-009",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A03 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -83,7 +94,7 @@
     "question": null
   },
   {
-    "id": "ANO-009",
+    "id": "ANO-010",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce O01 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -94,7 +105,7 @@
     "question": null
   },
   {
-    "id": "ANO-010",
+    "id": "ANO-011",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A04 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -105,7 +116,7 @@
     "question": null
   },
   {
-    "id": "ANO-011",
+    "id": "ANO-012",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A05 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -116,7 +127,7 @@
     "question": null
   },
   {
-    "id": "ANO-012",
+    "id": "ANO-013",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A06 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -127,7 +138,7 @@
     "question": null
   },
   {
-    "id": "ANO-013",
+    "id": "ANO-014",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce ED77812 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -138,7 +149,7 @@
     "question": null
   },
   {
-    "id": "ANO-014",
+    "id": "ANO-015",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A07 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -149,7 +160,7 @@
     "question": null
   },
   {
-    "id": "ANO-015",
+    "id": "ANO-016",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A08 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -160,7 +171,7 @@
     "question": null
   },
   {
-    "id": "ANO-016",
+    "id": "ANO-017",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A09 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -171,7 +182,7 @@
     "question": null
   },
   {
-    "id": "ANO-017",
+    "id": "ANO-018",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce TE-5498 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -182,7 +193,7 @@
     "question": null
   },
   {
-    "id": "ANO-018",
+    "id": "ANO-019",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A11 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -193,7 +204,7 @@
     "question": null
   },
   {
-    "id": "ANO-019",
+    "id": "ANO-020",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A12 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -204,7 +215,7 @@
     "question": null
   },
   {
-    "id": "ANO-020",
+    "id": "ANO-021",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A13 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -215,7 +226,7 @@
     "question": null
   },
   {
-    "id": "ANO-021",
+    "id": "ANO-022",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce O02 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -226,7 +237,7 @@
     "question": null
   },
   {
-    "id": "ANO-022",
+    "id": "ANO-023",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A14 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -237,7 +248,7 @@
     "question": null
   },
   {
-    "id": "ANO-023",
+    "id": "ANO-024",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A15 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -248,7 +259,7 @@
     "question": null
   },
   {
-    "id": "ANO-024",
+    "id": "ANO-025",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A16 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -259,7 +270,7 @@
     "question": null
   },
   {
-    "id": "ANO-025",
+    "id": "ANO-026",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A17 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -270,7 +281,7 @@
     "question": null
   },
   {
-    "id": "ANO-026",
+    "id": "ANO-027",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce O03 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -281,7 +292,7 @@
     "question": null
   },
   {
-    "id": "ANO-027",
+    "id": "ANO-028",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce TN-2026-08 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -292,7 +303,7 @@
     "question": null
   },
   {
-    "id": "ANO-028",
+    "id": "ANO-029",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A18 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -303,7 +314,7 @@
     "question": null
   },
   {
-    "id": "ANO-029",
+    "id": "ANO-030",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A19 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -314,7 +325,7 @@
     "question": null
   },
   {
-    "id": "ANO-030",
+    "id": "ANO-031",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A20 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -325,7 +336,7 @@
     "question": null
   },
   {
-    "id": "ANO-031",
+    "id": "ANO-032",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce CHQ-0004521 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -336,7 +347,7 @@
     "question": null
   },
   {
-    "id": "ANO-032",
+    "id": "ANO-033",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A21 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -347,7 +358,7 @@
     "question": null
   },
   {
-    "id": "ANO-033",
+    "id": "ANO-034",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A22 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -358,7 +369,7 @@
     "question": null
   },
   {
-    "id": "ANO-034",
+    "id": "ANO-035",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce RCHQ-0831 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -369,7 +380,7 @@
     "question": null
   },
   {
-    "id": "ANO-035",
+    "id": "ANO-036",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A25 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
@@ -380,25 +391,13 @@
     "question": null
   },
   {
-    "id": "ANO-036",
+    "id": "ANO-037",
     "titre": "Écriture sans justificatif référencé",
     "description": "La pièce A26 ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.",
     "gravite": "haute",
     "preuves": [
       "GL:A26",
       "GL-LIGNE:E-2026-08-0047"
-    ],
-    "question": null
-  },
-  {
-    "id": "ANO-037",
-    "titre": "TVA à l’encaissement partiellement résolue",
-    "description": "Le moteur calcule uniquement les comptes TVA explicitement présents et ne génère pas de déclaration complète sans preuve de lettrage entre encaissements, paiements et pièces.",
-    "gravite": "haute",
-    "preuves": [
-      "GL:comptes_tva",
-      "BQ:alpha",
-      "BQ:omega"
     ],
     "question": null
   },
@@ -418,22 +417,22 @@
   },
   {
     "id": "ANO-039",
-    "titre": "Écart de rapprochement bancaire (alpha)",
-    "description": "Le solde du relevé et le solde du grand livre ne concordent pas ; aucune correction automatique n’est proposée.",
+    "titre": "Écart de rapprochement bancaire (banque_alpha)",
+    "description": "Le solde du relevé et le solde du grand livre ne concordent pas ; aucune correction automatique n’est proposée à cette étape.",
     "gravite": "haute",
     "preuves": [
-      "BQ:alpha",
+      "BQ:banque_alpha",
       "GL:compte:51411"
     ],
     "question": null
   },
   {
     "id": "ANO-040",
-    "titre": "Écart de rapprochement bancaire (omega)",
-    "description": "Le solde du relevé et le solde du grand livre ne concordent pas ; aucune correction automatique n’est proposée.",
+    "titre": "Écart de rapprochement bancaire (banque_omega)",
+    "description": "Le solde du relevé et le solde du grand livre ne concordent pas ; aucune correction automatique n’est proposée à cette étape.",
     "gravite": "haute",
     "preuves": [
-      "BQ:omega",
+      "BQ:banque_omega",
       "GL:compte:51412"
     ],
     "question": null

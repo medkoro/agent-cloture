@@ -55,6 +55,7 @@ export const BankReconciliationSchema = z.object({
   solde_gl_apres: amount,
   ecart_residuel: amount,
   corrections: z.array(z.string()).optional(),
+  corrections_candidates: z.array(z.record(z.unknown())).optional(),
   suspens: z.array(z.record(z.unknown())).optional(),
   controle_totaux_imprimes: z.record(z.unknown()).optional(),
 }).strict();
