@@ -79,6 +79,10 @@ describe('integrite du grand livre', () => {
 });
 
 describe('bank_engine', () => {
+  const truncationChart = [
+    { code: '44110012', libelle: 'Fournisseurs — Transit Express', compte_parent: '4411' },
+    { code: '44110014', libelle: 'Fournisseurs — Cabinet Nour', compte_parent: '4411' },
+  ];
   it('verifie la coherence des totaux imprimes', () => {
     const header = { solde_initial: 1000, total_debit_imprime: 500, total_credit_imprime: 300, solde_final_imprime: 800 };
     const rows = [{ id_ligne: 'X1', debit: '500.00', credit: '0' }, { id_ligne: 'X2', debit: '0', credit: '300.00' }];
@@ -94,7 +98,7 @@ describe('bank_engine', () => {
       { piece: 'TE-5521', compte: '34552', debit: '727.52', credit: '0' },
       { piece: 'TE-5521', compte: '44110012', debit: '0', credit: '4365.12' },
     ];
-    const found = detectTruncations({ key: 'banque_omega', rows }, checksum, ledger);
+    const found = detectTruncations({ key: 'banque_omega', rows }, checksum, ledger, truncationChart);
     expect(found).toEqual([{ banque: 'banque_omega', id_ligne: 'O3', piece: 'TE-5521', montant_extrait: 365.12, montant_corrige: 4365.12, ecart: 4000 }]);
   });
   it('detecte les virements internes entre comptes propres', () => {
@@ -114,7 +118,7 @@ describe('bank_engine', () => {
       { piece: 'TE-5521', compte: '34552', debit: '727.52', credit: '0' },
       { piece: 'TE-5521', compte: '44110012', debit: '0', credit: '4365.12' },
     ];
-    const found = detectTruncations({ key: 'banque_omega', rows }, checksum, ledger);
+    const found = detectTruncations({ key: 'banque_omega', rows }, checksum, ledger, truncationChart);
     expect(found).toEqual([{ banque: 'banque_omega', id_ligne: 'O4', piece: 'TE-5521', montant_extrait: 365.12, montant_corrige: 4365.12, ecart: 4000 }]);
   });
   it('detecte des troncatures debit et credit simultanees', () => {
@@ -127,7 +131,7 @@ describe('bank_engine', () => {
       { piece: 'TE-5521', compte: '44110012', debit: '0', credit: '4365.12' },
       { piece: 'TE-5530', compte: '44110014', debit: '0', credit: '1222.00' },
     ];
-    const found = detectTruncations({ key: 'banque_omega', rows }, checksum, ledger);
+    const found = detectTruncations({ key: 'banque_omega', rows }, checksum, ledger, truncationChart);
     expect(found).toEqual([
       { banque: 'banque_omega', id_ligne: 'O3', piece: 'TE-5521', montant_extrait: 365.12, montant_corrige: 4365.12, ecart: 4000 },
       { banque: 'banque_omega', id_ligne: 'O6', piece: 'TE-5530', montant_extrait: 222, montant_corrige: 1222, ecart: 1000 },
@@ -137,7 +141,7 @@ describe('bank_engine', () => {
     const checksum = { ecart_debit: 4000, ecart_credit: 0, ecart_solde: 4000 } as StatementChecksum;
     const rows = [{ id_ligne: 'O3', libelle: 'VIR EMIS FOURN TE-5521', debit: '365.13', credit: '0' }];
     const ledger = [{ piece: 'TE-5521', compte: '44110012', debit: '0', credit: '4365.12' }];
-    expect(detectTruncations({ key: 'banque_omega', rows }, checksum, ledger)).toEqual([]);
+    expect(detectTruncations({ key: 'banque_omega', rows }, checksum, ledger, truncationChart)).toEqual([]);
   });
   it('ne consomme une ligne que par un seul virement', () => {
     const a = { key: 'banque_alpha', rows: [{ id_ligne: 'A13', date_operation: '2026-08-19', debit: '50000.00', credit: '0' }] };
@@ -424,5 +428,73 @@ describe('vat_engine régime encaissement', () => {
       statut: 'annotation_exclue',
       motif: 'ordinateur portable à usage personnel',
     }));
+  });
+
+  it('échoue bruyamment si le plafond espèces journalier est absent des données (pas de fallback)', () => {
+    const fiscal = JSON.parse(JSON.stringify(baseInput.fiscal)) as { tva: Record<string, unknown> };
+    delete fiscal.tva.reglement_especes;
+    expect(() => calculateVatEncaissement({ ...baseInput, fiscal })).toThrow(/plafond_deductible_par_jour_et_fournisseur/);
+  });
+
+  it('recompose le TTC fournisseur via les collectifs dérivés du plan et des tiers (pas de 4411 en dur)', () => {
+    const chart = [
+      { code: '4413', libelle: 'Fournisseurs (collectif)', compte_parent: '' },
+      { code: '44130001', libelle: 'Fournisseurs — X', compte_parent: '4413' },
+      { code: '34552', libelle: 'État — TVA récupérable sur charges', compte_parent: '' },
+    ];
+    const result = calculateVatEncaissement({
+      ...baseInput,
+      chart,
+      tiers: [{ code: 'F001', type: 'fournisseur', nom: 'X', compte: '44130001' }],
+      banks: [{ key: 'banque_alpha', rows: [{ id_ligne: 'B1', date_operation: '2026-08-05', libelle: 'VIR FOURN INV-1', debit: '12000.00', credit: '0' }] }],
+      ledger: [
+        { piece: 'INV-1', compte: '44130001', tiers: 'F001', debit: '0', credit: '12000.00' },
+        { piece: 'INV-1', compte: '34552', tiers: 'F001', debit: '2000.00', credit: '0' },
+      ],
+    });
+    expect(result.tva_deductible_charges).toBe(2000);
+    expect(result.imputations_deductible).toContainEqual(expect.objectContaining({ facture: 'INV-1', tva: 2000, statut: 'total' }));
+  });
+
+  it('recompose le TTC client via les collectifs dérivés du plan et des tiers (pas de 3421 en dur)', () => {
+    const chart = [
+      { code: '3422', libelle: 'Clients (collectif)', compte_parent: '' },
+      { code: '34220001', libelle: 'Clients — Y', compte_parent: '3422' },
+      { code: '4455', libelle: 'État — TVA facturée', compte_parent: '' },
+    ];
+    const result = calculateVatEncaissement({
+      ...baseInput,
+      chart,
+      tiers: [{ code: 'C001', type: 'client', nom: 'Client SARL', compte: '34220001' }],
+      banks: [{ key: 'banque_alpha', rows: [{ id_ligne: 'S1', date_operation: '2026-08-07', libelle: 'VIR RECU CLIENT SARL', debit: '0', credit: '12000.00' }] }],
+      ledger: [
+        { piece: 'FAC-9', compte: '34220001', tiers: 'C001', debit: '12000.00', credit: '0' },
+        { piece: 'FAC-9', compte: '4455', tiers: 'C001', debit: '0', credit: '2000.00' },
+      ],
+    });
+    expect(result.tva_collectee_exigible).toBe(2000);
+    expect(result.imputations_collectee).toContainEqual(expect.objectContaining({ facture: 'FAC-9', tva: 2000, statut: 'total' }));
+  });
+
+  it('somme la TVA d une pièce mixte 34552 + 34551 au lieu d en retenir le max', () => {
+    const chart = [
+      { code: '4413', libelle: 'Fournisseurs (collectif)', compte_parent: '' },
+      { code: '44130001', libelle: 'Fournisseurs — X', compte_parent: '4413' },
+      { code: '34552', libelle: 'État — TVA récupérable sur charges', compte_parent: '' },
+      { code: '34551', libelle: 'État — TVA récupérable sur les immobilisations', compte_parent: '' },
+      { code: '5161', libelle: 'Caisse', compte_parent: '' },
+    ];
+    const result = calculateVatEncaissement({
+      ...baseInput,
+      chart,
+      tiers: [{ code: 'F001', type: 'fournisseur', nom: 'X', compte: '44130001' }],
+      ledger: [
+        { piece: 'INV-M', compte: '44130001', tiers: 'F001', debit: '0', credit: '2400.00' },
+        { piece: 'INV-M', compte: '34552', tiers: 'F001', debit: '300.00', credit: '0' },
+        { piece: 'INV-M', compte: '34551', tiers: 'F001', debit: '100.00', credit: '0' },
+        { piece: 'INV-M', compte: '5161', debit: '0', credit: '2400.00' },
+      ],
+    });
+    expect(result.tva_deductible_charges + result.tva_deductible_immobilisations).toBe(400);
   });
 });

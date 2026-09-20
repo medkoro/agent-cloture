@@ -89,7 +89,7 @@ export function verifyStatementChecksum(header: Record<string, unknown>, rows: R
 
 const PIECE_PATTERN = /[A-Z]{2,4}-\d{2,4}(?:-\d{3,5})?/;
 
-const collectorPrefixes = (chart: Row[]): string[] => (chart.length > 0 ? [...collectifAccounts(chart)] : ['4411']);
+const collectorPrefixes = (chart: Row[]): string[] => [...collectifAccounts(chart)];
 
 function invoiceTotal(ledger: Row[], piece: string, isCollector: (compte: string) => boolean): number | undefined {
   let found = false;

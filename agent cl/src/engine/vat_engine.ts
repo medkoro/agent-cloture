@@ -215,6 +215,29 @@ export function calculateVatEncaissement(input: VatEncaissementInput): VatEncais
   const chartCodes = new Set(input.chart.map((row) => String(row.code ?? '')));
   const tiersByCode = new Map<string, Row>(input.tiers.map((row) => [String(row.code ?? ''), row]));
   const caisseCompte = String(((input.societe.caisse as { compte?: unknown } | null | undefined)?.compte) ?? '');
+  const bankAccounts = new Set(
+    (((input.societe.banques as Array<{ compte?: unknown } | null | undefined> | null | undefined) ?? [])
+      .map((bank) => String(bank?.compte ?? ''))
+      .filter((compte) => compte.length > 0)),
+  );
+  const parentByAccount = new Map<string, string>();
+  for (const row of input.chart) {
+    const code = String(row.code ?? '');
+    const parent = String(row.compte_parent ?? '');
+    if (code && parent) parentByAccount.set(code, parent);
+  }
+  const collectifsOfNature = (isClientNature: boolean): string[] => {
+    const parents = new Set<string>();
+    for (const tier of input.tiers) {
+      if ((String(tier.type ?? '') === 'client') !== isClientNature) continue;
+      const parent = String(tier.compte ?? '') ? parentByAccount.get(String(tier.compte ?? '')) : undefined;
+      if (parent) parents.add(parent);
+    }
+    return [...parents];
+  };
+  const clientCollectifs = collectifsOfNature(true);
+  const supplierCollectifs = collectifsOfNature(false);
+  const onCollectifs = (compte: string, prefixes: string[]): boolean => prefixes.some((prefix) => compte.startsWith(prefix));
 
   const feesRate = (() => {
     const nature = ((input.fiscal?.tva as { taux_par_nature?: unknown } | undefined)?.taux_par_nature as Record<string, unknown> | undefined)?.['frais_bancaires'];
@@ -222,7 +245,11 @@ export function calculateVatEncaissement(input: VatEncaissementInput): VatEncais
   })();
   const especesPlafond = (() => {
     const rule = ((input.fiscal?.tva as { reglement_especes?: unknown } | undefined)?.reglement_especes as Record<string, unknown> | undefined)?.['plafond_deductible_par_jour_et_fournisseur'];
-    return Number.isFinite(Number(rule)) ? Number(rule) : 5000;
+    const parsed = Number(rule);
+    if (!Number.isFinite(parsed)) {
+      throw new Error('Paramètre fiscal manquant ou invalide : fiscal.tva.reglement_especes.plafond_deductible_par_jour_et_fournisseur');
+    }
+    return parsed;
   })();
   const ecartSeuil = (() => {
     const text = String(((input.policy?.conventions_comptables as { ecart_reglement?: unknown } | undefined)?.ecart_reglement) ?? '');
@@ -297,8 +324,8 @@ export function calculateVatEncaissement(input: VatEncaissementInput): VatEncais
   for (const row of input.ledger) {
     const piece = String(row.piece ?? '');
     if (!piece) continue;
-    if (String(row.compte ?? '').startsWith('514')) continue;
     const compte = String(row.compte ?? '');
+    if (bankAccounts.has(compte)) continue;
     const debit = amount(row.debit);
     const credit = amount(row.credit);
     let bundle = bundles.get(piece);
@@ -308,15 +335,15 @@ export function calculateVatEncaissement(input: VatEncaissementInput): VatEncais
     }
     const tiers = String(row.tiers ?? '');
     if (tiers && !bundle.tiers) bundle.tiers = tiers;
-    if (compte.startsWith('3421') && debit > 0) bundle.clientTtc += debit;
-    if (compte.startsWith('4411') && credit > 0) bundle.supplierTtc += credit;
-    if (accountTypes.collected.includes(compte) && credit > 0) bundle.clientTva = Math.max(bundle.clientTva, credit);
+    if (onCollectifs(compte, clientCollectifs) && debit > 0) bundle.clientTtc += debit;
+    if (onCollectifs(compte, supplierCollectifs) && credit > 0) bundle.supplierTtc += credit;
+    if (accountTypes.collected.includes(compte) && credit > 0) bundle.clientTva += credit;
     if (accountTypes.charges.includes(compte) && debit > 0) {
-      bundle.supplierTva = Math.max(bundle.supplierTva, debit);
+      bundle.supplierTva += debit;
       bundle.date ||= String(row.date_ecriture ?? '');
     }
     if (accountTypes.immobilisations.includes(compte) && debit > 0) {
-      bundle.supplierTva = Math.max(bundle.supplierTva, debit);
+      bundle.supplierTva += debit;
       bundle.immo = true;
       bundle.date ||= String(row.date_ecriture ?? '');
     }
@@ -324,8 +351,8 @@ export function calculateVatEncaissement(input: VatEncaissementInput): VatEncais
       bundle.caisseCredit += credit;
       bundle.date ||= String(row.date_ecriture ?? '');
     }
-    const isBank = compte.startsWith('514') || compte === caisseCompte;
-    const isDebt = compte.startsWith('3421') || compte.startsWith('4411');
+    const isBank = bankAccounts.has(compte) || compte === caisseCompte;
+    const isDebt = onCollectifs(compte, clientCollectifs) || onCollectifs(compte, supplierCollectifs);
     const isVat = accountTypes.collected.includes(compte) || accountTypes.charges.includes(compte) || accountTypes.immobilisations.includes(compte);
     if (debit > 0 && !isBank && !isDebt && !isVat) bundle.chargeAccounts.add(compte);
   }
