@@ -1,62 +1,32 @@
 [
   {
-    "id": "ANO-001",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Periode verrouillee.",
-    "sujet": "Periode verrouillee",
-    "preuve": "GL:OD-2026-07-0093"
-  },
-  {
-    "id": "ANO-002",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Ecriture sur compte collectif.",
-    "sujet": "Ecriture sur compte collectif",
-    "preuve": "GL:OD-2026-07-0093"
-  },
-  {
     "id": "ANO-003",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Ecriture desequilibree.",
+    "texte": "Confirmez-vous que l'écriture E-2026-08-0031 (pièce jointe justificatifs/FAC_ACHAT/FS-2231_FroidService.pdf, 850 MAD) concerne bien le fournisseur Froid Service — M. Adil Kettani (auto-entrepreneur) ?",
     "sujet": "Ecriture desequilibree",
     "preuve": "GL:E-2026-08-0031"
   },
   {
-    "id": "ANO-004",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Totaux du relevé incohérents avec les lignes extraites.",
-    "sujet": "Totaux du relevé incohérents avec les lignes extraites",
-    "preuve": "BQ:banque_omega"
-  },
-  {
-    "id": "ANO-005",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Extraction tronquee.",
-    "sujet": "Extraction tronquee",
-    "preuve": "BQ:banque_omega:O03"
-  },
-  {
-    "id": "ANO-006",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Mouvement de virement interne a comptabiliser via virements de fonds.",
-    "sujet": "Mouvement de virement interne a comptabiliser via virements de fonds",
-    "preuve": "BQ:banque_alpha:A13"
-  },
-  {
     "id": "ANO-007",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Écriture sans justificatif référencé.",
+    "texte": "Merci de transmettre la facture ou le justificatif formel pour la pièce TN-2026-08 (TelcoNet SA, 2026-08-26) : aucun document n'y est associé dans l'index.",
     "sujet": "Écriture sans justificatif référencé",
-    "preuve": "GL:OD-2026-07-0093"
-  },
-  {
-    "id": "ANO-008",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Écriture sans justificatif référencé.",
-    "sujet": "Écriture sans justificatif référencé",
-    "preuve": "GL:A01"
-  },
-  {
-    "id": "ANO-009",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Écriture sans justificatif référencé.",
-    "sujet": "Écriture sans justificatif référencé",
-    "preuve": "GL:A03"
+    "preuve": "GL:TN-2026-08"
   },
   {
     "id": "ANO-010",
-    "texte": "Merci de fournir la preuve ou la décision nécessaire pour traiter : Écriture sans justificatif référencé.",
-    "sujet": "Écriture sans justificatif référencé",
-    "preuve": "GL:O01"
+    "texte": "Le client BTP Chaouia SARL n'a pas réglé la facture FAC-2025-0877 (48000.00 MAD) depuis plus de 10 mois et un chèque a été rejeté : confirmez-vous le litige et son statut ?",
+    "sujet": "Créance douteuse BTP Chaouia SARL — facture FAC-2025-0877 en litige",
+    "preuve": "OUVERTS:FAC-2025-0877"
+  },
+  {
+    "id": "ANO-015",
+    "texte": "Le paiement TVA de 2026-07 enregistré le 2026-08-27 est de 18240.00 MAD alors que la déclaration indique 18420.00 MAD (écart 180.00 MAD) : confirmez-vous cet écart et la régularisation ?",
+    "sujet": "Écart de règlement TVA 2026-07 : 18240.00 payés pour 18420.00 déclarés",
+    "preuve": "GL:E-2026-08-0038"
+  },
+  {
+    "id": "ANO-016",
+    "texte": "La retenue IR sur salaires de 2026-07 (6915.00 MAD, échéance 2026-08-31) n'apparaît pas réglée au 2026-08-31 : confirmez-vous le retard de versement ?",
+    "sujet": "IR sur salaires de 2026-07 (6915.00 MAD) non versé à l'échéance du 2026-08-31",
+    "preuve": "OUVERTURE:4452"
   }
 ]

@@ -28,6 +28,8 @@ export interface ClosingDataset {
   societe: JsonObject;
   openItems: Row[];
   priorDeclarations: JsonObject;
+  history: Row[];
+  clientScenario: JsonObject;
 }
 
 export async function filesUnder(root: string): Promise<string[]> {
@@ -114,6 +116,8 @@ export async function loadClosingDataset(datasetDir: string, period: string): Pr
   const inventoryPath = await optionalFile(files, (name) => name === `inventaire_${end}.csv`);
   const openItemsPath = await optionalFile(files, (name) => name === `postes_ouverts_${previousEnd}.csv`);
   const priorDeclarationsPath = await optionalFile(files, (name) => name === 'declarations_et_rapprochements_anterieurs.json');
+  const historyPath = await optionalFile(files, (name) => name.startsWith('historique_resultat_') && name.endsWith('.csv'));
+  const clientScenarioPath = await optionalFile(files, (name) => name === 'scenario.json');
 
   return {
     period,
@@ -131,6 +135,8 @@ export async function loadClosingDataset(datasetDir: string, period: string): Pr
     societe: await jsonFile(societePath),
     openItems: openItemsPath ? await readCsv(openItemsPath) : [],
     priorDeclarations: priorDeclarationsPath ? await jsonFile(priorDeclarationsPath) : {},
+    history: historyPath ? await readCsv(historyPath) : [],
+    clientScenario: clientScenarioPath ? await jsonFile(clientScenarioPath) : {},
   };
 }
 

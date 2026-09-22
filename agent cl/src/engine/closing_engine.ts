@@ -16,6 +16,16 @@ import {
   type PostingDraft,
 } from './postings.js';
 import { calculateVat, calculateVatEncaissement, vatAccountTypes, type VatResult } from './vat_engine.js';
+import {
+  detectAnalyticVariances,
+  detectDoubtfulReceivables,
+  detectLegitimateSuspens,
+  detectMultiInvoiceLettrage,
+  detectOverdueSupplierInvoices,
+  detectUnpaidWithholdingTax,
+  detectVatDeclarationGap,
+  type AnomalyDraft,
+} from './anomalies_run2.js';
 
 const numberValue = (value: unknown): number => {
   const parsed = Number(value ?? 0);
@@ -37,22 +47,41 @@ function statementBalance(header: Record<string, unknown>): number {
   return parsed;
 }
 
-function anomaly(id: string, title: string, description: string, evidence: string[], gravite: string = 'moyenne', actionAttendue?: string): Anomaly {
-  return { id, titre: title, description, gravite, preuves: evidence, question: null, ...(actionAttendue ? { action_attendue: actionAttendue } : {}) };
+function anomaly(id: string, title: string, description: string, evidence: string[], gravite: string = 'moyenne', actionAttendue?: string, question?: string): Anomaly {
+  return { id, titre: title, description, gravite, preuves: evidence, question: question ?? null, ...(actionAttendue ? { action_attendue: actionAttendue } : {}) };
 }
 
-function missingEvidenceAnomalies(dataset: ClosingDataset, anomalies: Anomaly[]): void {
+function tiersLabel(dataset: ClosingDataset, code: string | undefined): string | undefined {
+  if (!code) return undefined;
+  return dataset.tiers.find((row) => row.code === code)?.nom;
+}
+
+function missingEvidenceAnomalies(dataset: ClosingDataset, anomalies: Anomaly[], opts: { lockedFin: string; excludedEcritureIds: Set<string> }): void {
+  const nameTokens = companyNameTokens(String(((dataset.societe as { raison_sociale?: unknown }).raison_sociale) ?? ''));
+  const natureByCode = new Map(dataset.chart.map((row) => [String(row.code ?? ''), String(row.nature ?? '')]));
   const missing = new Map<string, Row>();
   for (const row of dataset.ledger) {
-    if (!row.justificatif && row.piece) missing.set(row.piece, row);
+    // Une charge sans justificatif ET sans référence bancaire de rapprochement est une pièce
+    // manquante réelle (ex. TelcoNet). Les lignes bancaires (ref_banque renseignée) et les
+    // écritures déjà traitées ailleurs (période verrouillée, doublon) ne sont pas reprises ici.
+    if (row.justificatif || row.ref_banque || !row.piece) continue;
+    if (row.date_ecriture && row.date_ecriture <= opts.lockedFin) continue;
+    if (row.ecriture_id && opts.excludedEcritureIds.has(row.ecriture_id)) continue;
+    if (natureByCode.get(row.compte ?? '') !== 'CHARGE') continue;
+    missing.set(row.piece, row);
   }
   for (const [piece, row] of missing) {
+    const tierCode = row.tiers || dataset.ledger.find((candidate) => candidate.piece === piece && candidate.tiers)?.tiers;
+    const tier = tiersLabel(dataset, tierCode);
+    const context = [redactCompanyName(row.libelle, nameTokens), tier].filter(Boolean).join(' — ');
     anomalies.push(anomaly(
       `ANO-${String(anomalies.length + 1).padStart(3, '0')}`,
       'Écriture sans justificatif référencé',
-      `La pièce ${piece} ne comporte pas de justificatif dans le grand livre ; aucune écriture complémentaire n’est générée.`,
+      `La pièce ${piece}${context ? ` (${context})` : ''} ne comporte pas de justificatif formel dans l'index des pièces ; aucune écriture complémentaire n'est générée.`,
       [`GL:${piece}`, `GL-LIGNE:${row.ecriture_id || piece}`],
       'haute',
+      'question_client',
+      tier ? `Merci de transmettre la facture ou le justificatif formel pour la pièce ${piece} (${tier}, ${row.date_ecriture ?? ''}) : aucun document n'y est associé dans l'index.` : undefined,
     ));
   }
 }
@@ -65,12 +94,15 @@ function policyMaximumQuestions(dataset: ClosingDataset): number {
 }
 
 function questionsFor(anomalies: Anomaly[], maximum: number): Output['questions'] {
-  return anomalies.slice(0, maximum).map((item) => ({
-    id: item.id,
-    sujet: item.titre,
-    texte: `Merci de fournir la preuve ou la décision nécessaire pour traiter : ${item.titre}.`,
-    preuve: item.preuves[0],
-  }));
+  return anomalies
+    .filter((item): item is Anomaly & { question: string } => typeof item.question === 'string' && item.question.length > 0)
+    .slice(0, Math.max(0, maximum))
+    .map((item) => ({
+      id: item.id,
+      sujet: item.titre,
+      texte: item.question,
+      preuve: item.preuves[0],
+    }));
 }
 
 function companyNameTokens(raisonSociale: string): string[] {
@@ -101,11 +133,12 @@ export class ClosingEngine {
       if (count <= 1) return [base];
       return Array.from({ length: count }, (_, index) => `${base}${String.fromCharCode(65 + index)}`);
     };
-    const push = (titre: string, description: string, preuves: string[], gravite = 'moyenne', actionAttendue?: string): string => {
+    const push = (titre: string, description: string, preuves: string[], gravite = 'moyenne', actionAttendue?: string, question?: string): string => {
       const id = `ANO-${String(anomalies.length + 1).padStart(3, '0')}`;
-      anomalies.push(anomaly(id, titre, description, preuves, gravite, actionAttendue));
+      anomalies.push(anomaly(id, titre, description, preuves, gravite, actionAttendue, question));
       return id;
     };
+    const pushDraft = (draft: AnomalyDraft): string => push(draft.titre, draft.description, draft.preuves, draft.gravite, draft.actionAttendue, draft.question);
     const addProposition = (anomalieId: string, draft: PostingDraft, id?: string): void => {
       propositions.push({
         id: id ?? allocatePropositionIds(1)[0],
@@ -125,13 +158,22 @@ export class ClosingEngine {
     for (const issue of checkLedgerIntegrity(dataset.ledger, dataset.chart, lockedFin)) {
       const piece = issue.piece ?? issue.ecriture_id ?? 'inconnue';
       if (issue.type === 'ecriture_desequilibree') {
+        const lines = dataset.ledger.filter((row) => row.ecriture_id === issue.ecriture_id);
+        const entryPiece = lines[0]?.piece || piece;
+        const doc = dataset.documents.find((row) => (row.statut_plateforme ?? '').toUpperCase().includes(entryPiece.toUpperCase()));
+        const tier = doc?.tiers ? dataset.tiers.find((row) => row.code === doc.tiers) : undefined;
+        const question = tier
+          ? `Confirmez-vous que l'écriture ${issue.ecriture_id ?? piece} (pièce jointe ${doc?.fichier}, ${Math.abs(issue.ecart ?? 0)} MAD) concerne bien le fournisseur ${tier.nom} ?`
+          : undefined;
         const anomalieId = push(
           'Ecriture desequilibree',
           `L’écriture ${issue.ecriture_id ?? piece} présente un écart de ${issue.ecart ?? 0} MAD ; aucune écriture corrective n’est générée.`,
           [`GL:${piece}`],
           'bloquante',
+          question ? 'question_client' : undefined,
+          question,
         );
-        const entryDate = dataset.ledger.find((row) => row.ecriture_id === issue.ecriture_id)?.date_ecriture ?? '';
+        const entryDate = lines[0]?.date_ecriture ?? '';
         if (issue.ecriture_id && entryDate > lockedFin) {
           const draft = draftComplementForUnbalancedEntry(issue.ecriture_id, dataset.ledger, dataset.documents, dataset.tiers);
           if (draft) addProposition(anomalieId, draft);
@@ -201,9 +243,17 @@ export class ClosingEngine {
       }
     }
 
-    missingEvidenceAnomalies(dataset, anomalies);
+    const duplicateReversals = findDuplicateInvoiceReversals(dataset.ledger, dataset.periodEnd);
+    missingEvidenceAnomalies(dataset, anomalies, {
+      lockedFin,
+      excludedEcritureIds: new Set(duplicateReversals.map((reversal) => reversal.duplicateEcritureId)),
+    });
 
-    for (const reversal of findDuplicateInvoiceReversals(dataset.ledger, dataset.periodEnd)) {
+    for (const draft of detectMultiInvoiceLettrage(dataset.openItems, dataset.tiers)) pushDraft(draft);
+    for (const draft of detectOverdueSupplierInvoices({ openItems: dataset.openItems, chart: dataset.chart, tiers: dataset.tiers, fiscal: dataset.fiscal, periodEnd: dataset.periodEnd })) pushDraft(draft);
+    for (const draft of detectDoubtfulReceivables({ openItems: dataset.openItems, tiers: dataset.tiers, suspensByBank: Object.fromEntries(suspensByBank), periodEnd: dataset.periodEnd })) pushDraft(draft);
+
+    for (const reversal of duplicateReversals) {
       const anomalieId = push(
         'Facture fournisseur en doublon',
         `L’écriture ${reversal.duplicateEcritureId} duplique l’écriture ${reversal.keeperEcritureId} déjà justifiée ; une contre-passation est proposée.`,
@@ -291,6 +341,13 @@ export class ClosingEngine {
       });
     }
 
+    const priorPeriod = lockedFin.slice(0, 7);
+    if (priorPeriod) {
+      for (const draft of detectVatDeclarationGap({ ledger: dataset.ledger, chart: dataset.chart, priorDeclarations: dataset.priorDeclarations, priorPeriod, fiscal: dataset.fiscal })) pushDraft(draft);
+      for (const draft of detectUnpaidWithholdingTax({ ledger: dataset.ledger, chart: dataset.chart, priorDeclarations: dataset.priorDeclarations, fiscal: dataset.fiscal, periodEnd: dataset.periodEnd })) pushDraft(draft);
+    }
+    for (const draft of detectAnalyticVariances({ ledger: dataset.ledger, history: dataset.history, policy: dataset.policy, period: dataset.period })) pushDraft(draft);
+
     const assets = calculateAssets({ rows: dataset.assets, periodEnd: dataset.periodEnd });
     if (assets.assets.length > 0) {
       push(
@@ -346,6 +403,8 @@ export class ClosingEngine {
         controle_totaux_imprimes: { ...checksum, ecart: mad((cents(checksum.ecart_debit) + cents(checksum.ecart_credit)) / 100) },
       };
     }
+    for (const draft of detectLegitimateSuspens(banksLike, dataset.ledger)) pushDraft(draft);
+
     for (const bank of dataset.banks) {
       const reconciliation = rapprochements[bank.key];
       if (reconciliation.ecart_residuel !== 0) {

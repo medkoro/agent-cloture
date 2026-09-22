@@ -78,7 +78,7 @@
   },
   {
     "id": "P-04",
-    "anomalie": "ANO-038",
+    "anomalie": "ANO-011",
     "type": "standard",
     "date": "2026-08-31",
     "journal": "OD",
@@ -110,7 +110,7 @@
   },
   {
     "id": "P-05A",
-    "anomalie": "ANO-039",
+    "anomalie": "ANO-012",
     "type": "standard",
     "date": "2026-08-14",
     "journal": "OD",
@@ -141,7 +141,7 @@
   },
   {
     "id": "P-05B",
-    "anomalie": "ANO-039",
+    "anomalie": "ANO-012",
     "type": "standard",
     "date": "2026-08-30",
     "journal": "OD",
@@ -172,7 +172,7 @@
   },
   {
     "id": "P-05C",
-    "anomalie": "ANO-039",
+    "anomalie": "ANO-012",
     "type": "standard",
     "date": "2026-08-28",
     "journal": "OD",
@@ -203,7 +203,7 @@
   },
   {
     "id": "P-06",
-    "anomalie": "ANO-040",
+    "anomalie": "ANO-013",
     "type": "standard",
     "date": "2026-08-30",
     "journal": "OD",
@@ -229,7 +229,7 @@
   },
   {
     "id": "P-07",
-    "anomalie": "ANO-041",
+    "anomalie": "ANO-014",
     "type": "standard",
     "date": "2026-08-18",
     "journal": "OD",

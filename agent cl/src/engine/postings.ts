@@ -280,7 +280,7 @@ function matchesTier(libelle: string, tokens: string[]): boolean {
   return tokens.every((token) => text.includes(token));
 }
 
-function findTierByLibelle(tiers: Row[], type: string, libelle: string): Row | undefined {
+export function findTierByLibelle(tiers: Row[], type: string, libelle: string): Row | undefined {
   let best: Row | undefined;
   let bestScore = -1;
   for (const tier of tiers) {
