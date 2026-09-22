@@ -154,6 +154,316 @@
   },
   {
     "id": "ANO-015",
+    "titre": "Frais bancaires comptabilisés TTC sans TVA récupérable extraite",
+    "description": "Des frais bancaires ont été saisis TTC dans le journal sans extraction de la TVA récupérable correspondante ; une correction est proposée.",
+    "gravite": "faible",
+    "preuves": [
+      "GL:E-2026-08-0012",
+      "GL:E-2026-08-0033"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-016",
+    "titre": "Virement reçu non identifié en compte d'attente",
+    "description": "Un virement de 7500 MAD reste non identifié en compte transitoire au 2026-08-31 ; la réponse du client permet de le régulariser.",
+    "gravite": "moyenne",
+    "action_attendue": "question_client",
+    "preuves": [
+      "GL:A25",
+      "SIM:Q01"
+    ],
+    "question": "Pouvez-vous confirmer l'origine du virement de 7500 MAD reçu le 2026-08-31 ?"
+  },
+  {
+    "id": "ANO-017",
+    "titre": "Caisse négative au 31/08",
+    "description": "Le solde de caisse calculé est négatif (-10520 MAD) ; la réponse du client confirme un apport en espèces de 10000 MAD non enregistré.",
+    "gravite": "haute",
+    "action_attendue": "question_client",
+    "preuves": [
+      "SIM:Q03"
+    ],
+    "question": "Le solde de caisse calculé est négatif (-10520 MAD) : confirmez-vous l'apport en espèces que vous mentionnez ?"
+  },
+  {
+    "id": "ANO-018",
+    "titre": "TVA non déductible — règlement en espèces au-delà du plafond",
+    "description": "Un règlement en espèces dépasse le plafond de déductibilité TVA par jour et par fournisseur ; la fraction excédentaire est reclassée en charge non déductible.",
+    "gravite": "haute",
+    "preuves": [
+      "GL:TE-5498"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-019",
+    "titre": "Écart de règlement client traité en frais bancaires",
+    "description": "Un écart de règlement inférieur ou égal au seuil défini par la politique du cabinet est reclassé en frais bancaires.",
+    "gravite": "faible",
+    "preuves": [
+      "GL:FAC-2026-0426"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-020",
+    "titre": "Perte de change réalisée non constatée",
+    "description": "Un règlement en devise a été effectué à un cours différent du cours historique de facturation ; la perte de change réalisée est constatée.",
+    "gravite": "moyenne",
+    "preuves": [
+      "GL:FAC-2026-0425",
+      "BQ:banque_alpha:A09"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-021",
+    "titre": "Perte de change réalisée non constatée",
+    "description": "Un règlement en devise a été effectué à un cours différent du cours historique de facturation ; la perte de change réalisée est constatée.",
+    "gravite": "moyenne",
+    "preuves": [
+      "GL:INV-BW-2026-118",
+      "BQ:banque_alpha:A16"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-022",
+    "titre": "Facture de vente émise mais absente du grand livre",
+    "description": "Une facture de vente référencée dans l'index des justificatifs n'apparaît pas dans le grand livre de la période : rupture de séquence à corriger.",
+    "gravite": "haute",
+    "preuves": [
+      "DOC:justificatifs/FAC_VENTE/FAC-2026-0428_CliniqueAlAmal.pdf"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-023",
+    "titre": "FNP antérieure non contre-passée",
+    "description": "Une facture non parvenue de la période précédente n'a pas été contre-passée alors que la facture réelle a été saisie ce mois-ci : la charge aurait été comptée deux fois.",
+    "gravite": "haute",
+    "preuves": [
+      "GL:4417",
+      "GL:REG-2026-07-88120"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-024",
+    "titre": "Facture REDEC — Régie de Distribution Eau & Électricité du mois non reçue au 31/08",
+    "description": "La facture du mois n'était pas reçue à la clôture ; une charge à payer est constituée sur la base du document transmis par le client.",
+    "gravite": "moyenne",
+    "action_attendue": "question_client",
+    "preuves": [
+      "SIM:Q04"
+    ],
+    "question": "Merci de transmettre la facture REDEC — Régie de Distribution Eau & Électricité du mois : elle n'apparaît pas dans le grand livre au 31/08."
+  },
+  {
+    "id": "ANO-025",
+    "titre": "Charge à payer — pièce reçue après la clôture",
+    "description": "Une pièce concernant la période a été reçue après la clôture ; une charge à payer est constituée sur la base du document.",
+    "gravite": "moyenne",
+    "preuves": [
+      "DOC:justificatifs/RECUS_EN_SEPTEMBRE/CJN-2026-061_CabinetNour.pdf"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-026",
+    "titre": "Travaux réceptionnés non facturés — produit à établir",
+    "description": "Un procès-verbal de réception atteste de travaux effectués sur la période, non encore facturés : un produit à établir est constitué depuis le devis accepté.",
+    "gravite": "haute",
+    "preuves": [
+      "DOC:justificatifs/COURRIERS/PV_reception_CliniqueAlAmal_2026-08-28.pdf",
+      "DOC:justificatifs/COURRIERS/Devis_DV-2026-118.pdf"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-027",
+    "titre": "Produit constaté d'avance — service rendu sur une période postérieure",
+    "description": "Un produit facturé et comptabilisé ce mois-ci correspond à une prestation dont la période de service démarre après la clôture : un produit constaté d'avance est constitué.",
+    "gravite": "haute",
+    "preuves": [
+      "GL:FAC-2026-0427"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-028",
+    "titre": "Charge constatée d'avance — abonnement pluriannuel passé en charge intégralement",
+    "description": "Un abonnement facturé pour plusieurs mois a été passé intégralement en charge ce mois-ci : la part relative aux mois suivants est constatée d'avance.",
+    "gravite": "haute",
+    "preuves": [
+      "GL:SC-2026-1187"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-029",
+    "titre": "Reprise mensuelle d'une charge constatée d'avance récurrente non passée",
+    "description": "Une charge récurrente strictement constante sur l'historique n'a pas été mouvementée ce mois-ci alors qu'une charge constatée d'avance ouverte doit être reprise.",
+    "gravite": "moyenne",
+    "preuves": [
+      "OUVERTURE:3491",
+      "HISTO:6134"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-030",
+    "titre": "Intérêts courus sur emprunt non constatés",
+    "description": "Des intérêts courus depuis la dernière échéance de l'emprunt dépassent le seuil de comptabilisation de la politique cabinet et ne sont pas constatés.",
+    "gravite": "faible",
+    "preuves": [
+      "ECHEANCIER:O01"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-031",
+    "titre": "Échéance de prêt comptabilisée intégralement en capital",
+    "description": "L'échéance de prêt a été saisie en totalité sur le compte de capital restant dû ; la part d'intérêts figurant dans le tableau d'amortissement est reclassée.",
+    "gravite": "moyenne",
+    "preuves": [
+      "BQ:OMEGA:O01",
+      "ECHEANCIER:O01"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-032",
+    "titre": "Immobilisation informatique non capitalisée (dépassement du seuil)",
+    "description": "Un équipement informatique dont le montant dépasse le seuil de capitalisation de la politique cabinet a été passé en charge ; il est reclassé en immobilisation, TVA comprise.",
+    "gravite": "moyenne",
+    "action_attendue": "question_client",
+    "preuves": [
+      "GL:IT-2026-0933",
+      "SIM:Q02"
+    ],
+    "question": "Confirmez-vous l'affectation professionnelle de l'équipement informatique de la pièce IT-2026-0933 ?"
+  },
+  {
+    "id": "ANO-033",
+    "titre": "Équipement à usage personnel du dirigeant payé par la société",
+    "description": "Un équipement identifié comme étant à usage personnel du dirigeant a été payé par la société ; il est reclassé en compte courant associé débiteur — alerte juridique : ce type de compte est interdit pour un associé personne physique en SARL, escalade à l'expert-comptable.",
+    "gravite": "haute",
+    "action_attendue": "escalade_expert_comptable",
+    "preuves": [
+      "GL:IT-2026-0933",
+      "SIM:Q02"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-034",
+    "titre": "Dotations aux amortissements du mois non passées",
+    "description": "Les dotations aux amortissements linéaires du mois n'ont pas été comptabilisées ; elles sont calculées depuis le registre des immobilisations.",
+    "gravite": "moyenne",
+    "preuves": [
+      "IMMO:registre"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-035",
+    "titre": "Variation de stock non constatée",
+    "description": "L'inventaire physique du 31/08, après correction confirmée par le client, diffère du stock comptable : la variation est constatée.",
+    "gravite": "moyenne",
+    "action_attendue": "question_client",
+    "preuves": [
+      "STOCK:inventaire_2026-08-31",
+      "SIM:Q07"
+    ],
+    "question": "L'inventaire du 31/08 comporte une quantité négative sur un article : pouvez-vous confirmer la quantité réelle en stock ?"
+  },
+  {
+    "id": "ANO-036",
+    "titre": "Solde en devise non réévalué au cours de clôture",
+    "description": "Un solde fournisseur/client libellé en devise n'a pas été réévalué au cours de Bank Al-Maghrib du dernier jour du mois ; la perte latente est provisionnée.",
+    "gravite": "moyenne",
+    "preuves": [
+      "FX:2026-08-31",
+      "GL:44110002"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-037",
+    "titre": "TVA récupérée à tort sur une charge non déductible",
+    "description": "De la TVA a été comptabilisée comme récupérable sur une charge visée par la liste des exclusions fiscales ; elle est reclassée en charge non déductible.",
+    "gravite": "faible",
+    "preuves": [
+      "GL:TK-0808"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-038",
+    "titre": "TVA récupérée à tort sur une charge non déductible",
+    "description": "De la TVA a été comptabilisée comme récupérable sur une charge visée par la liste des exclusions fiscales ; elle est reclassée en charge non déductible.",
+    "gravite": "faible",
+    "preuves": [
+      "GL:ND-0813"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-039",
+    "titre": "Paie du mois non comptabilisée",
+    "description": "Le journal de paie du mois n'a pas été comptabilisé alors que le virement des salaires a été exécuté ; l'écriture est reconstituée depuis le journal de paie.",
+    "gravite": "haute",
+    "preuves": [
+      "PAIE:2026-08"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-040",
+    "titre": "Majoration de retard sur cotisation sociale",
+    "description": "La cotisation sociale de la période précédente a été payée après l'échéance ; une majoration de retard est constatée.",
+    "gravite": "moyenne",
+    "preuves": [
+      "BQ:ALPHA:A20",
+      "DECL:cnss_2026-07"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-041",
+    "titre": "Retenue à la source sur loyer non constatée",
+    "description": "Le loyer versé à un bailleur personne physique a été comptabilisé pour le seul montant net payé ; la retenue à la source sur revenus fonciers n'a pas été constatée.",
+    "gravite": "haute",
+    "preuves": [
+      "BQ:ALPHA:A04",
+      "DOC:bail"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-042",
+    "titre": "Note de frais avancée par un dirigeant non comptabilisée",
+    "description": "Une note de frais réglée personnellement par un dirigeant n'a pas été comptabilisée ; elle est constatée avec la TVA récupérable, en compte courant associé.",
+    "gravite": "faible",
+    "preuves": [
+      "DOC:justificatifs/NOTES_DE_FRAIS/Facture_hotel_gerant_2026-08-17.pdf"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-043",
+    "titre": "Déclaration de TVA du mois à préparer",
+    "description": "L'écriture de règlement/solde de la TVA du mois en régime d'encaissement est proposée depuis le calcul déterministe.",
+    "gravite": "haute",
+    "preuves": [
+      "TVA:detail"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-044",
     "titre": "Écart de règlement TVA 2026-07 : 18240.00 payés pour 18420.00 déclarés",
     "description": "Le paiement TVA enregistré le 2026-08-27 (18240.00 MAD, GL:E-2026-08-0038) diffère de la TVA due déclarée pour 2026-07 (18420.00 MAD) : écart de 180.00 MAD, pénalité de retard estimée 9.00 MAD.",
     "gravite": "haute",
@@ -165,7 +475,7 @@
     "question": "Le paiement TVA de 2026-07 enregistré le 2026-08-27 est de 18240.00 MAD alors que la déclaration indique 18420.00 MAD (écart 180.00 MAD) : confirmez-vous cet écart et la régularisation ?"
   },
   {
-    "id": "ANO-016",
+    "id": "ANO-045",
     "titre": "IR sur salaires de 2026-07 (6915.00 MAD) non versé à l'échéance du 2026-08-31",
     "description": "La retenue IR sur salaires (6915.00 MAD, période 2026-07) n'apparaît pas réglée au grand livre au 2026-08-31, alors que l'échéance était le 2026-08-31 : majoration de retard estimée 345.75 MAD.",
     "gravite": "haute",
@@ -177,7 +487,7 @@
     "question": "La retenue IR sur salaires de 2026-07 (6915.00 MAD, échéance 2026-08-31) n'apparaît pas réglée au 2026-08-31 : confirmez-vous le retard de versement ?"
   },
   {
-    "id": "ANO-017",
+    "id": "ANO-046",
     "titre": "Revue analytique : variation(s) significative(s) vs baseline historique",
     "description": "Comparaison de la balance 2026-08 aux moyennes mensuelles 2026-01..2026-07 : 7111 (baseline -714285.71 → 2026-08 -118000.00, écart 596285.71 MAD) ; 7113 (baseline -60000.00 → 2026-08 -100890.00, écart -40890.00 MAD) ; 7124 (baseline -160000.00 → 2026-08 -36000.00, écart 124000.00 MAD) ; 7331 (baseline -164.29 → 2026-08 0.00, écart 164.29 MAD) ; 6111 (baseline 664285.71 → 2026-08 637700.00, écart -26585.71 MAD) ; 6114 (baseline -5000.00 → 2026-08 0.00, écart 5000.00 MAD) ; 6125 (baseline 2628.57 → 2026-08 500.00, écart -2128.57 MAD) ; 61253 (baseline 1757.14 → 2026-08 29000.00, écart 27242.86 MAD) ; 61254 (baseline 1407.14 → 2026-08 0.00, écart -1407.14 MAD) ; 6131 (baseline 21428.57 → 2026-08 53000.00, écart 31571.43 MAD) ; 6133 (baseline 2028.57 → 2026-08 850.00, écart -1178.57 MAD) ; 61365 (baseline 8000.00 → 2026-08 0.00, écart -8000.00 MAD) ; 61431 (baseline 3185.71 → 2026-08 5000.00, écart 1814.29 MAD) ; 6147 (baseline 695.71 → 2026-08 440.00, écart -255.71 MAD) ; 6167 (baseline 2642.86 → 2026-08 0.00, écart -2642.86 MAD) ; 6331 (baseline 457.14 → 2026-08 0.00, écart -457.14 MAD) ; 61711 (baseline 59400.00 → 2026-08 0.00, écart -59400.00 MAD) ; 61741 (baseline 10372.26 → 2026-08 0.00, écart -10372.26 MAD) ; 6193 (baseline 12409.53 → 2026-08 0.00, écart -12409.53 MAD) ; 6311 (baseline 2631.83 → 2026-08 0.00, écart -2631.83 MAD).",
     "gravite": "info",
@@ -208,21 +518,7 @@
     "question": null
   },
   {
-    "id": "ANO-018",
-    "titre": "Dotation d’immobilisations à revoir",
-    "description": "Une dotation déterministe a été calculée depuis le registre, mais aucune écriture n’est générée sans validation des comptes et des règles applicables.",
-    "gravite": "moyenne",
-    "preuves": [
-      "IMMO:IMM-001",
-      "IMMO:IMM-002",
-      "IMMO:IMM-003",
-      "IMMO:IMM-004",
-      "IMMO:IMM-005"
-    ],
-    "question": null
-  },
-  {
-    "id": "ANO-019",
+    "id": "ANO-047",
     "titre": "Suspens bancaires légitimes (en transit)",
     "description": "Ces suspens de rapprochement s'expliquent par le délai d'encaissement/débit normal et ne nécessitent aucune écriture : chèque émis non débité CHQ-0004521 (banque_alpha, 3120 MAD) ; remise de chèque non créditée RCHQ-0831 (banque_alpha, 9600 MAD).",
     "gravite": "info",

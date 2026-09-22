@@ -1,10 +1,10 @@
 {
   "regime": "encaissement",
   "tva_collectee_exigible": 55000,
-  "tva_deductible_charges": 51883.49,
-  "tva_deductible_immobilisations": 0,
+  "tva_deductible_charges": 46283.49,
+  "tva_deductible_immobilisations": 2900,
   "credit_anterieur": 0,
-  "tva_due": 3116.51,
+  "tva_due": 5816.51,
   "echeance": "2026-09-30",
   "detail_collectee": [
     {

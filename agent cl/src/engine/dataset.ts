@@ -30,6 +30,9 @@ export interface ClosingDataset {
   priorDeclarations: JsonObject;
   history: Row[];
   clientScenario: JsonObject;
+  loanSchedule: Row[];
+  payroll: Row[];
+  fxRates: Row[];
 }
 
 export async function filesUnder(root: string): Promise<string[]> {
@@ -118,6 +121,9 @@ export async function loadClosingDataset(datasetDir: string, period: string): Pr
   const priorDeclarationsPath = await optionalFile(files, (name) => name === 'declarations_et_rapprochements_anterieurs.json');
   const historyPath = await optionalFile(files, (name) => name.startsWith('historique_resultat_') && name.endsWith('.csv'));
   const clientScenarioPath = await optionalFile(files, (name) => name === 'scenario.json');
+  const loanSchedulePath = await optionalFile(files, (name) => name.startsWith('echeancier_pret') && name.endsWith('.csv'));
+  const payrollPath = await optionalFile(files, (name) => name.startsWith('journal_paie_') && name.endsWith('.csv'));
+  const fxRatesPath = await optionalFile(files, (name) => name.startsWith('cours_bam_') && name.endsWith('.csv'));
 
   return {
     period,
@@ -137,6 +143,9 @@ export async function loadClosingDataset(datasetDir: string, period: string): Pr
     priorDeclarations: priorDeclarationsPath ? await jsonFile(priorDeclarationsPath) : {},
     history: historyPath ? await readCsv(historyPath) : [],
     clientScenario: clientScenarioPath ? await jsonFile(clientScenarioPath) : {},
+    loanSchedule: loanSchedulePath ? await readCsv(loanSchedulePath) : [],
+    payroll: payrollPath ? await readCsv(payrollPath) : [],
+    fxRates: fxRatesPath ? await readCsv(fxRatesPath) : [],
   };
 }
 

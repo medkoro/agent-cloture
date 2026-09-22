@@ -43,8 +43,12 @@ describe('integration atlas (fixture)', () => {
   it('reconstruit la tva encaissement depuis les donnees', async () => {
     const output = await run();
     expect(output.tva.tva_collectee_exigible).toBe(55000);
-    expect(output.tva.tva_deductible_charges).toBe(51883.49);   // data-only, IT-2026-0933 entier sur 34552 ; Hôtel NDF 200 = proposition P-36 (étape 2), hors entrées du moteur
-    expect(output.tva.tva_due).toBe(3116.51);
+    // RUN3 : la facture IT-2026-0933 est scindée entre part société (immobilisation 34551,
+    // P-25) et part personnelle du dirigeant (exclue de la déduction, P-26) ; la note de frais
+    // hôtel avancée par le dirigeant (P-36) ajoute sa TVA déductible sur charges.
+    expect(output.tva.tva_deductible_charges).toBe(46283.49);
+    expect(output.tva.tva_deductible_immobilisations).toBe(2900);
+    expect(output.tva.tva_due).toBe(5816.51);
   });
   it('clee les rapprochements par les cles canoniques et typpe les suspens', async () => {
     const output = await run();

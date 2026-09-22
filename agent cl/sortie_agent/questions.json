@@ -18,13 +18,43 @@
     "preuve": "OUVERTS:FAC-2025-0877"
   },
   {
-    "id": "ANO-015",
+    "id": "ANO-016",
+    "texte": "Pouvez-vous confirmer l'origine du virement de 7500 MAD reçu le 2026-08-31 ?",
+    "sujet": "Virement reçu non identifié en compte d'attente",
+    "preuve": "GL:A25"
+  },
+  {
+    "id": "ANO-017",
+    "texte": "Le solde de caisse calculé est négatif (-10520 MAD) : confirmez-vous l'apport en espèces que vous mentionnez ?",
+    "sujet": "Caisse négative au 31/08",
+    "preuve": "SIM:Q03"
+  },
+  {
+    "id": "ANO-024",
+    "texte": "Merci de transmettre la facture REDEC — Régie de Distribution Eau & Électricité du mois : elle n'apparaît pas dans le grand livre au 31/08.",
+    "sujet": "Facture REDEC — Régie de Distribution Eau & Électricité du mois non reçue au 31/08",
+    "preuve": "SIM:Q04"
+  },
+  {
+    "id": "ANO-032",
+    "texte": "Confirmez-vous l'affectation professionnelle de l'équipement informatique de la pièce IT-2026-0933 ?",
+    "sujet": "Immobilisation informatique non capitalisée (dépassement du seuil)",
+    "preuve": "GL:IT-2026-0933"
+  },
+  {
+    "id": "ANO-035",
+    "texte": "L'inventaire du 31/08 comporte une quantité négative sur un article : pouvez-vous confirmer la quantité réelle en stock ?",
+    "sujet": "Variation de stock non constatée",
+    "preuve": "STOCK:inventaire_2026-08-31"
+  },
+  {
+    "id": "ANO-044",
     "texte": "Le paiement TVA de 2026-07 enregistré le 2026-08-27 est de 18240.00 MAD alors que la déclaration indique 18420.00 MAD (écart 180.00 MAD) : confirmez-vous cet écart et la régularisation ?",
     "sujet": "Écart de règlement TVA 2026-07 : 18240.00 payés pour 18420.00 déclarés",
     "preuve": "GL:E-2026-08-0038"
   },
   {
-    "id": "ANO-016",
+    "id": "ANO-045",
     "texte": "La retenue IR sur salaires de 2026-07 (6915.00 MAD, échéance 2026-08-31) n'apparaît pas réglée au 2026-08-31 : confirmez-vous le retard de versement ?",
     "sujet": "IR sur salaires de 2026-07 (6915.00 MAD) non versé à l'échéance du 2026-08-31",
     "preuve": "OUVERTURE:4452"

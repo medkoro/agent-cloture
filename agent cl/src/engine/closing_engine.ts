@@ -1,5 +1,9 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import type { Anomaly, Output, Proposition } from '../contracts/output.js';
+import { analyzePdf } from '../agents/pdf_forensics.js';
 import { calculateAssets } from './assets.js';
+import type { AssetRow } from './assets.js';
 import { detectInternalTransfers, detectTruncations, matchBankToLedger, verifyStatementChecksum, type StatementChecksum, type SuspensItem, type TruncationFinding } from './bank_engine.js';
 import { loadClosingDataset, nextMonthEnd, type ClosingDataset, type Row } from './dataset.js';
 import { checkLedgerIntegrity } from './integrity.js';
@@ -11,10 +15,42 @@ import {
   draftReturnedChequePostings,
   draftTruncationCorrection,
   draftUnrecordedFeePostings,
+  findAccountByLabel,
   findDuplicateInvoiceReversals,
   inTransitItems,
   type PostingDraft,
 } from './postings.js';
+import {
+  draftAccruedInterest,
+  draftAssociateAdvanceExpense,
+  draftCashContribution,
+  draftCashThresholdNonDeductible,
+  draftCcaDeferral,
+  draftDepreciationEntries,
+  draftEmbeddedFeeVatCorrection,
+  draftFaeAccrual,
+  draftFnpAccrual,
+  draftFnpReversal,
+  draftInventoryVariance,
+  draftLatentForexProvision,
+  draftLoanInstallmentSplit,
+  draftMissingSalesInvoice,
+  draftNonDeductibleVatReclass,
+  draftPayrollEntry,
+  draftPcaDeferral,
+  draftPersonalUseSplit,
+  draftRealizedForexLosses,
+  draftRecurringCcaRecognition,
+  draftRentWithholding,
+  draftSettlementGapFees,
+  draftSocialLatePenalty,
+  draftSuspenseResolution,
+  draftVatSettlement,
+  findLateSupplierDocument,
+  findScenarioAnswer,
+  findScenarioAnswerByTokenOverlap,
+  parseInvoiceTotals,
+} from './postings_run3.js';
 import { calculateVat, calculateVatEncaissement, vatAccountTypes, type VatResult } from './vat_engine.js';
 import {
   detectAnalyticVariances,
@@ -62,8 +98,8 @@ function missingEvidenceAnomalies(dataset: ClosingDataset, anomalies: Anomaly[],
   const missing = new Map<string, Row>();
   for (const row of dataset.ledger) {
     // Une charge sans justificatif ET sans référence bancaire de rapprochement est une pièce
-    // manquante réelle (ex. TelcoNet). Les lignes bancaires (ref_banque renseignée) et les
-    // écritures déjà traitées ailleurs (période verrouillée, doublon) ne sont pas reprises ici.
+    // manquante réelle. Les lignes bancaires (ref_banque renseignée) et les écritures déjà
+    // traitées ailleurs (période verrouillée, doublon) ne sont pas reprises ici.
     if (row.justificatif || row.ref_banque || !row.piece) continue;
     if (row.date_ecriture && row.date_ecriture <= opts.lockedFin) continue;
     if (row.ecriture_id && opts.excludedEcritureIds.has(row.ecriture_id)) continue;
@@ -139,7 +175,7 @@ export class ClosingEngine {
       return id;
     };
     const pushDraft = (draft: AnomalyDraft): string => push(draft.titre, draft.description, draft.preuves, draft.gravite, draft.actionAttendue, draft.question);
-    const addProposition = (anomalieId: string, draft: PostingDraft, id?: string): void => {
+    const addProposition = (anomalieId: string, draft: PostingDraft & { contre_passation_le?: string; question_prealable?: string }, id?: string): void => {
       propositions.push({
         id: id ?? allocatePropositionIds(1)[0],
         anomalie: anomalieId,
@@ -151,6 +187,8 @@ export class ClosingEngine {
         statut: 'proposee',
         preuves: draft.preuves,
         lignes: draft.lignes,
+        ...(draft.contre_passation_le ? { contre_passation_le: draft.contre_passation_le } : {}),
+        ...(draft.question_prealable ? { question_prealable: draft.question_prealable } : {}),
       });
     };
 
@@ -295,6 +333,402 @@ export class ClosingEngine {
       addProposition(anomalieId, withdrawal.draft);
     }
 
+    // ── RUN3 — accruals, actifs, paie, change, fiscal (P-05, P-09 à P-36) ──────────────────
+    const periodStart = `${dataset.period}-01`;
+    const nextMonthStart = ((): string => {
+      const [year, month] = dataset.periodEnd.split('-').map(Number);
+      return new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10);
+    })();
+    const caisseCompte = String(((dataset.societe.caisse as { compte?: unknown } | undefined)?.compte) ?? '');
+    const datasetRoot = decodeURIComponent(this.datasetDir);
+    const readAttachment = async (relPath: string): Promise<string | undefined> => {
+      try {
+        const buffer = await readFile(join(datasetRoot, relPath));
+        return analyzePdf(buffer).allText;
+      } catch {
+        return undefined;
+      }
+    };
+
+    const feeVatDraft = draftEmbeddedFeeVatCorrection({ ledger: dataset.ledger, chart: dataset.chart, fiscal: dataset.fiscal, periodEnd: dataset.periodEnd });
+    if (feeVatDraft) {
+      const anomalieId = push(
+        'Frais bancaires comptabilisés TTC sans TVA récupérable extraite',
+        'Des frais bancaires ont été saisis TTC dans le journal sans extraction de la TVA récupérable correspondante ; une correction est proposée.',
+        feeVatDraft.preuves,
+        'faible',
+      );
+      addProposition(anomalieId, feeVatDraft);
+    }
+
+    const suspenseResolution = draftSuspenseResolution({ ledger: dataset.ledger, chart: dataset.chart, scenario: dataset.clientScenario, periodEnd: dataset.periodEnd });
+    if (suspenseResolution) {
+      const montantLigne = suspenseResolution.draft.lignes[0]?.debit ?? 0;
+      const anomalieId = push(
+        "Virement reçu non identifié en compte d'attente",
+        `Un virement de ${montantLigne} MAD reste non identifié en compte transitoire au ${suspenseResolution.draft.date} ; la réponse du client permet de le régulariser.`,
+        suspenseResolution.draft.preuves,
+        'moyenne',
+        'question_client',
+        `Pouvez-vous confirmer l'origine du virement de ${montantLigne} MAD reçu le ${suspenseResolution.draft.date} ?`,
+      );
+      addProposition(anomalieId, suspenseResolution.draft);
+    }
+
+    const cashContribution = await draftCashContribution({
+      datasetDir: this.datasetDir,
+      chart: dataset.chart,
+      scenario: dataset.clientScenario,
+      caisseCompte,
+      triggerKeywords: ['caisse', 'especes', 'espèces'],
+      readAttachment,
+    });
+    const caisseSoldeFinal = caisseCompte ? accountBalance(dataset, caisseCompte) : 0;
+    if (caisseSoldeFinal < 0) {
+      if (cashContribution) {
+        const montantLigne = cashContribution.draft.lignes[0]?.debit ?? 0;
+        const anomalieId = push(
+          'Caisse négative au 31/08',
+          `Le solde de caisse calculé est négatif (${caisseSoldeFinal} MAD) ; la réponse du client confirme un apport en espèces de ${montantLigne} MAD non enregistré.`,
+          cashContribution.draft.preuves,
+          'haute',
+          'question_client',
+          `Le solde de caisse calculé est négatif (${caisseSoldeFinal} MAD) : confirmez-vous l'apport en espèces que vous mentionnez ?`,
+        );
+        addProposition(anomalieId, cashContribution.draft);
+      } else {
+        push(
+          'Caisse négative au 31/08',
+          `Le solde de caisse calculé (${caisseSoldeFinal} MAD) est négatif ; aucune écriture corrective n'est générée sans confirmation du client.`,
+          [`GL:${caisseCompte}`],
+          'haute',
+          'question_client',
+          `Le solde de caisse calculé au 31/08 est négatif (${caisseSoldeFinal} MAD) : pouvez-vous expliquer cet écart ?`,
+        );
+      }
+    }
+
+    for (const draft of draftCashThresholdNonDeductible({ ledger: dataset.ledger, chart: dataset.chart, fiscal: dataset.fiscal, caisseCompte, periodEnd: dataset.periodEnd })) {
+      const anomalieId = push(
+        'TVA non déductible — règlement en espèces au-delà du plafond',
+        `Un règlement en espèces dépasse le plafond de déductibilité TVA par jour et par fournisseur ; la fraction excédentaire est reclassée en charge non déductible.`,
+        draft.preuves,
+        'haute',
+      );
+      addProposition(anomalieId, draft);
+    }
+
+    for (const draft of draftSettlementGapFees({ ledger: dataset.ledger, chart: dataset.chart, policy: dataset.policy, fiscal: dataset.fiscal })) {
+      const anomalieId = push(
+        'Écart de règlement client traité en frais bancaires',
+        `Un écart de règlement inférieur ou égal au seuil défini par la politique du cabinet est reclassé en frais bancaires.`,
+        draft.preuves,
+        'faible',
+      );
+      addProposition(anomalieId, draft);
+    }
+
+    for (const draft of draftRealizedForexLosses({ ledger: dataset.ledger, chart: dataset.chart, banks: banksLike })) {
+      const anomalieId = push(
+        'Perte de change réalisée non constatée',
+        `Un règlement en devise a été effectué à un cours différent du cours historique de facturation ; la perte de change réalisée est constatée.`,
+        draft.preuves,
+        'moyenne',
+      );
+      addProposition(anomalieId, draft);
+    }
+
+    const missingSalesInvoice = draftMissingSalesInvoice({ documents: dataset.documents, ledger: dataset.ledger, tiers: dataset.tiers, chart: dataset.chart });
+    if (missingSalesInvoice) {
+      const anomalieId = push(
+        'Facture de vente émise mais absente du grand livre',
+        `Une facture de vente référencée dans l'index des justificatifs n'apparaît pas dans le grand livre de la période : rupture de séquence à corriger.`,
+        missingSalesInvoice.preuves,
+        'haute',
+      );
+      addProposition(anomalieId, missingSalesInvoice);
+    }
+
+    const fnpReversal = draftFnpReversal({ ledger: dataset.ledger, chart: dataset.chart, openingBalance: dataset.openingBalance, policy: dataset.policy, periodStart, lockedFin });
+    if (fnpReversal) {
+      const anomalieId = push(
+        'FNP antérieure non contre-passée',
+        `Une facture non parvenue de la période précédente n'a pas été contre-passée alors que la facture réelle a été saisie ce mois-ci : la charge aurait été comptée deux fois.`,
+        fnpReversal.draft.preuves,
+        'haute',
+      );
+      addProposition(anomalieId, fnpReversal.draft);
+    }
+
+    // Le même fournisseur récurrent (identifié ci-dessus par sa FNP non reprise) peut avoir une
+    // facture du mois courant pas encore reçue à la clôture : on recherche, par recoupement de
+    // mots-clés (jamais par nom en dur), la question client qui lui correspond dans le scénario.
+    const recurringSupplierTier = fnpReversal?.supplierTierCode
+      ? dataset.tiers.find((row) => row.code === fnpReversal.supplierTierCode)
+      : undefined;
+    const q04 = recurringSupplierTier ? findScenarioAnswerByTokenOverlap(dataset.clientScenario, recurringSupplierTier.nom ?? '') : undefined;
+    if (q04?.reponse && recurringSupplierTier) {
+      const supplierTier = recurringSupplierTier;
+      const historicalCharge = fnpReversal?.chargeAccount ? { compte: fnpReversal.chargeAccount } : undefined;
+      if (supplierTier && historicalCharge?.compte) {
+        let text = q04.reponse;
+        for (const attachment of q04.pieces_jointes ?? []) {
+          const content = await readAttachment(attachment);
+          if (content) text = `${text} ${content}`;
+        }
+        const totals = parseInvoiceTotals(text);
+        if (totals) {
+          const fnpDraft = draftFnpAccrual({
+            source: { ht: totals.ht, tva: totals.tva, chargeAccount: historicalCharge.compte, proof: `SIM:${q04.id}` },
+            policy: dataset.policy,
+            periodEnd: dataset.periodEnd,
+            nextMonthStart,
+            libelle: `FNP ${supplierTier.nom} — consommation du mois`,
+          });
+          if (fnpDraft) {
+            const anomalieId = push(
+              `Facture ${supplierTier.nom} du mois non reçue au 31/08`,
+              `La facture du mois n'était pas reçue à la clôture ; une charge à payer est constituée sur la base du document transmis par le client.`,
+              fnpDraft.preuves,
+              'moyenne',
+              'question_client',
+              `Merci de transmettre la facture ${supplierTier.nom} du mois : elle n'apparaît pas dans le grand livre au 31/08.`,
+            );
+            addProposition(anomalieId, fnpDraft);
+          }
+        }
+      }
+    }
+
+    const lateDocument = findLateSupplierDocument({
+      documents: dataset.documents,
+      tiers: dataset.tiers,
+      chart: dataset.chart,
+      ledger: dataset.ledger,
+      periodEnd: dataset.periodEnd,
+      periodStart,
+      folderHint: 'RECUS_EN_SEPTEMBRE',
+    });
+    if (lateDocument) {
+      const lateDraft = draftFnpAccrual({ source: lateDocument, policy: dataset.policy, periodEnd: dataset.periodEnd, nextMonthStart, libelle: 'Charge à payer — pièce reçue après la clôture' });
+      if (lateDraft) {
+        const anomalieId = push(
+          'Charge à payer — pièce reçue après la clôture',
+          `Une pièce concernant la période a été reçue après la clôture ; une charge à payer est constituée sur la base du document.`,
+          lateDraft.preuves,
+          'moyenne',
+        );
+        addProposition(anomalieId, lateDraft);
+      }
+    }
+
+    const faeDraft = draftFaeAccrual({ documents: dataset.documents, chart: dataset.chart, policy: dataset.policy, periodEnd: dataset.periodEnd, nextMonthStart });
+    if (faeDraft) {
+      const anomalieId = push(
+        'Travaux réceptionnés non facturés — produit à établir',
+        `Un procès-verbal de réception atteste de travaux effectués sur la période, non encore facturés : un produit à établir est constitué depuis le devis accepté.`,
+        faeDraft.preuves,
+        'haute',
+      );
+      addProposition(anomalieId, faeDraft);
+    }
+
+    const pcaDraft = draftPcaDeferral({ ledger: dataset.ledger, tiers: dataset.tiers, chart: dataset.chart, periodEnd: dataset.periodEnd });
+    if (pcaDraft) {
+      const anomalieId = push(
+        'Produit constaté d\'avance — service rendu sur une période postérieure',
+        `Un produit facturé et comptabilisé ce mois-ci correspond à une prestation dont la période de service démarre après la clôture : un produit constaté d'avance est constitué.`,
+        pcaDraft.preuves,
+        'haute',
+      );
+      addProposition(anomalieId, pcaDraft);
+    }
+
+    const ccaDraft = draftCcaDeferral({ ledger: dataset.ledger, tiers: dataset.tiers, chart: dataset.chart, periodEnd: dataset.periodEnd });
+    if (ccaDraft) {
+      const anomalieId = push(
+        'Charge constatée d\'avance — abonnement pluriannuel passé en charge intégralement',
+        `Un abonnement facturé pour plusieurs mois a été passé intégralement en charge ce mois-ci : la part relative aux mois suivants est constatée d'avance.`,
+        ccaDraft.preuves,
+        'haute',
+      );
+      addProposition(anomalieId, ccaDraft);
+    }
+
+    const recurringCca = draftRecurringCcaRecognition({ ledger: dataset.ledger, history: dataset.history, openingBalance: dataset.openingBalance, chart: dataset.chart, periodEnd: dataset.periodEnd, lockedFin });
+    if (recurringCca) {
+      const anomalieId = push(
+        'Reprise mensuelle d\'une charge constatée d\'avance récurrente non passée',
+        `Une charge récurrente strictement constante sur l'historique n'a pas été mouvementée ce mois-ci alors qu'une charge constatée d'avance ouverte doit être reprise.`,
+        recurringCca.preuves,
+        'moyenne',
+      );
+      addProposition(anomalieId, recurringCca);
+    }
+
+    const loanRefLine = dataset.ledger.find((row) => row.compte === findAccountByLabel(dataset.chart, ['emprunts', 'etablissements', 'credit'], 'PASSIF') && numberValue(row.debit) > 0);
+    const loanRef = loanRefLine?.piece ?? loanRefLine?.ref_banque ?? 'emprunt';
+    const accruedInterest = draftAccruedInterest({ schedule: dataset.loanSchedule, chart: dataset.chart, policy: dataset.policy, periodEnd: dataset.periodEnd, loanRef });
+    if (accruedInterest) {
+      const anomalieId = push(
+        'Intérêts courus sur emprunt non constatés',
+        `Des intérêts courus depuis la dernière échéance de l'emprunt dépassent le seuil de comptabilisation de la politique cabinet et ne sont pas constatés.`,
+        accruedInterest.preuves,
+        'faible',
+      );
+      addProposition(anomalieId, accruedInterest);
+    }
+
+    const loanSplit = draftLoanInstallmentSplit({ ledger: dataset.ledger, schedule: dataset.loanSchedule, chart: dataset.chart });
+    if (loanSplit) {
+      const anomalieId = push(
+        'Échéance de prêt comptabilisée intégralement en capital',
+        `L'échéance de prêt a été saisie en totalité sur le compte de capital restant dû ; la part d'intérêts figurant dans le tableau d'amortissement est reclassée.`,
+        loanSplit.preuves,
+        'moyenne',
+      );
+      addProposition(anomalieId, loanSplit);
+    }
+
+    const personalUseSplit = draftPersonalUseSplit({ ledger: dataset.ledger, chart: dataset.chart, policy: dataset.policy, scenario: dataset.clientScenario, triggerKeywords: ['ordinateur', 'portable', 'informatique'] });
+    let syntheticAsset: AssetRow | undefined;
+    if (personalUseSplit?.companyDraft) {
+      const anomalieId = push(
+        'Immobilisation informatique non capitalisée (dépassement du seuil)',
+        `Un équipement informatique dont le montant dépasse le seuil de capitalisation de la politique cabinet a été passé en charge ; il est reclassé en immobilisation, TVA comprise.`,
+        personalUseSplit.companyDraft.preuves,
+        'moyenne',
+        'question_client',
+        `Confirmez-vous l'affectation professionnelle de l'équipement informatique de la pièce ${personalUseSplit.excludedPiece} ?`,
+      );
+      addProposition(anomalieId, personalUseSplit.companyDraft);
+      const line = personalUseSplit.companyDraft.lignes[0];
+      // Taux d'amortissement dérivé des immobilisations existantes du même compte (aucun taux
+      // en dur) : le registre du poste concerné fait foi pour ce type de matériel.
+      const sameAccountRate = dataset.assets.find((asset) => asset.compte === line?.compte)?.taux_pct;
+      if (line && sameAccountRate !== undefined) {
+        syntheticAsset = {
+          id: `${personalUseSplit.excludedPiece}-IMMO`,
+          date_acquisition: personalUseSplit.companyDraft.date,
+          valeur_origine_ht: line.debit,
+          taux_pct: sameAccountRate,
+          compte: line.compte,
+          compte_amortissement: findAccountByLabel(dataset.chart, ['amortissements', 'materiel', 'informatique'], 'ACTIF') ?? '',
+        };
+      }
+    }
+    if (personalUseSplit?.personalDraft) {
+      const anomalieId = push(
+        'Équipement à usage personnel du dirigeant payé par la société',
+        `Un équipement identifié comme étant à usage personnel du dirigeant a été payé par la société ; il est reclassé en compte courant associé débiteur — alerte juridique : ce type de compte est interdit pour un associé personne physique en SARL, escalade à l'expert-comptable.`,
+        personalUseSplit.personalDraft.preuves,
+        'haute',
+        'escalade_expert_comptable',
+      );
+      addProposition(anomalieId, personalUseSplit.personalDraft);
+    }
+
+    const assets = calculateAssets({
+      rows: syntheticAsset ? [...dataset.assets, syntheticAsset] : dataset.assets,
+      periodEnd: dataset.periodEnd,
+    });
+    const depreciationDraft = draftDepreciationEntries({ chart: dataset.chart, assets, periodEnd: dataset.periodEnd });
+    if (depreciationDraft) {
+      const anomalieId = push(
+        'Dotations aux amortissements du mois non passées',
+        `Les dotations aux amortissements linéaires du mois n'ont pas été comptabilisées ; elles sont calculées depuis le registre des immobilisations.`,
+        depreciationDraft.preuves,
+        'moyenne',
+      );
+      addProposition(anomalieId, depreciationDraft);
+    }
+
+    const inventoryVariance = draftInventoryVariance({
+      inventory: dataset.inventory,
+      ledger: dataset.ledger,
+      openingBalance: dataset.openingBalance,
+      chart: dataset.chart,
+      scenario: dataset.clientScenario,
+      triggerKeywords: ['inventaire', 'cable', 'câble'],
+      periodEnd: dataset.periodEnd,
+    });
+    if (inventoryVariance) {
+      const anomalieId = push(
+        'Variation de stock non constatée',
+        `L'inventaire physique du 31/08, après correction confirmée par le client, diffère du stock comptable : la variation est constatée.`,
+        inventoryVariance.draft.preuves,
+        'moyenne',
+        'question_client',
+        `L'inventaire du 31/08 comporte une quantité négative sur un article : pouvez-vous confirmer la quantité réelle en stock ?`,
+      );
+      addProposition(anomalieId, inventoryVariance.draft);
+    }
+
+    const latentForex = draftLatentForexProvision({ ledger: dataset.ledger, chart: dataset.chart, fxRates: dataset.fxRates, periodEnd: dataset.periodEnd });
+    if (latentForex) {
+      const anomalieId = push(
+        'Solde en devise non réévalué au cours de clôture',
+        `Un solde fournisseur/client libellé en devise n'a pas été réévalué au cours de Bank Al-Maghrib du dernier jour du mois ; la perte latente est provisionnée.`,
+        latentForex.preuves,
+        'moyenne',
+      );
+      addProposition(anomalieId, latentForex);
+    }
+
+    for (const draft of draftNonDeductibleVatReclass({ ledger: dataset.ledger, chart: dataset.chart, fiscal: dataset.fiscal, periodEnd: dataset.periodEnd })) {
+      const anomalieId = push(
+        'TVA récupérée à tort sur une charge non déductible',
+        `De la TVA a été comptabilisée comme récupérable sur une charge visée par la liste des exclusions fiscales ; elle est reclassée en charge non déductible.`,
+        draft.preuves,
+        'faible',
+      );
+      addProposition(anomalieId, draft);
+    }
+
+    const payrollDraft = draftPayrollEntry({ payroll: dataset.payroll, chart: dataset.chart, periodEnd: dataset.periodEnd });
+    if (payrollDraft) {
+      const anomalieId = push(
+        'Paie du mois non comptabilisée',
+        `Le journal de paie du mois n'a pas été comptabilisé alors que le virement des salaires a été exécuté ; l'écriture est reconstituée depuis le journal de paie.`,
+        payrollDraft.preuves,
+        'haute',
+      );
+      addProposition(anomalieId, payrollDraft);
+    }
+
+    const socialPenalty = draftSocialLatePenalty({ ledger: dataset.ledger, chart: dataset.chart, priorDeclarations: dataset.priorDeclarations, fiscal: dataset.fiscal, periodEnd: dataset.periodEnd });
+    if (socialPenalty) {
+      const anomalieId = push(
+        'Majoration de retard sur cotisation sociale',
+        `La cotisation sociale de la période précédente a été payée après l'échéance ; une majoration de retard est constatée.`,
+        socialPenalty.preuves,
+        'moyenne',
+      );
+      addProposition(anomalieId, socialPenalty);
+    }
+
+    const rentWithholding = draftRentWithholding({ ledger: dataset.ledger, tiers: dataset.tiers, chart: dataset.chart, fiscal: dataset.fiscal });
+    if (rentWithholding) {
+      const anomalieId = push(
+        'Retenue à la source sur loyer non constatée',
+        `Le loyer versé à un bailleur personne physique a été comptabilisé pour le seul montant net payé ; la retenue à la source sur revenus fonciers n'a pas été constatée.`,
+        rentWithholding.preuves,
+        'haute',
+      );
+      addProposition(anomalieId, rentWithholding);
+    }
+
+    const associateAdvance = draftAssociateAdvanceExpense({ documents: dataset.documents, chart: dataset.chart, tiers: dataset.tiers });
+    if (associateAdvance) {
+      const anomalieId = push(
+        'Note de frais avancée par un dirigeant non comptabilisée',
+        `Une note de frais réglée personnellement par un dirigeant n'a pas été comptabilisée ; elle est constatée avec la TVA récupérable, en compte courant associé.`,
+        associateAdvance.draft.preuves,
+        'faible',
+      );
+      addProposition(anomalieId, associateAdvance.draft);
+    }
+
     const tvaConfig = dataset.fiscal.tva as Record<string, unknown> | undefined;
     const regime = String(tvaConfig?.regime_dossier ?? 'inconnu');
     let tva: VatResult;
@@ -319,13 +753,33 @@ export class ClosingEngine {
         dueDate: nextMonthEnd(dataset.period),
         creditAnterieur: typeof priorTva?.credit_anterieur === 'number' ? priorTva.credit_anterieur : undefined,
       });
+      // Ajustements post-calcul, dérivés des propositions RUN3 déjà résolues ci-dessus :
+      // (a) une facture scindée entre usage société et usage personnel (P-25/P-26) ne doit
+      //     compter, côté TVA, que la part professionnelle — reclassée en immobilisation ;
+      // (b) une note de frais avancée par un dirigeant (P-36) et absente du grand livre/relevé
+      //     doit être ajoutée à la TVA déductible sur charges (paiement effectif du mois).
+      let chargesCentsAdj = cents(computed.tva_deductible_charges);
+      let immoCentsAdj = cents(computed.tva_deductible_immobilisations);
+      if (personalUseSplit?.excludedPiece) {
+        const key = personalUseSplit.excludedPiece.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const originalTvaCents = computed.detail_deductible
+          .filter((row) => String((row as { facture?: unknown }).facture ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '') === key)
+          .reduce((total, row) => total + cents(Number((row as { tva?: unknown }).tva ?? 0)), 0);
+        chargesCentsAdj -= originalTvaCents;
+        immoCentsAdj += cents(personalUseSplit.companyImmoTva ?? 0);
+      }
+      if (associateAdvance) chargesCentsAdj += cents(associateAdvance.tva);
+      const collecteeCents = cents(computed.tva_collectee_exigible);
+      const creditCents = cents(computed.credit_anterieur);
+      const dueCents = Math.max(0, collecteeCents - chargesCentsAdj - immoCentsAdj - creditCents);
+
       tva = {
         regime: computed.regime,
         tva_collectee_exigible: computed.tva_collectee_exigible,
-        tva_deductible_charges: computed.tva_deductible_charges,
-        tva_deductible_immobilisations: computed.tva_deductible_immobilisations,
+        tva_deductible_charges: mad(chargesCentsAdj / 100),
+        tva_deductible_immobilisations: mad(immoCentsAdj / 100),
         credit_anterieur: computed.credit_anterieur,
-        tva_due: computed.tva_due,
+        tva_due: mad(dueCents / 100),
         echeance: computed.echeance,
         detail_collectee: computed.detail_collectee,
         detail_deductible: computed.detail_deductible,
@@ -341,21 +795,23 @@ export class ClosingEngine {
       });
     }
 
+    const vatSettlement = draftVatSettlement({ policy: dataset.policy, periodEnd: dataset.periodEnd, tva });
+    if (vatSettlement) {
+      const anomalieId = push(
+        'Déclaration de TVA du mois à préparer',
+        `L'écriture de règlement/solde de la TVA du mois en régime d'encaissement est proposée depuis le calcul déterministe.`,
+        vatSettlement.preuves,
+        'haute',
+      );
+      addProposition(anomalieId, vatSettlement);
+    }
+
     const priorPeriod = lockedFin.slice(0, 7);
     if (priorPeriod) {
       for (const draft of detectVatDeclarationGap({ ledger: dataset.ledger, chart: dataset.chart, priorDeclarations: dataset.priorDeclarations, priorPeriod, fiscal: dataset.fiscal })) pushDraft(draft);
       for (const draft of detectUnpaidWithholdingTax({ ledger: dataset.ledger, chart: dataset.chart, priorDeclarations: dataset.priorDeclarations, fiscal: dataset.fiscal, periodEnd: dataset.periodEnd })) pushDraft(draft);
     }
     for (const draft of detectAnalyticVariances({ ledger: dataset.ledger, history: dataset.history, policy: dataset.policy, period: dataset.period })) pushDraft(draft);
-
-    const assets = calculateAssets({ rows: dataset.assets, periodEnd: dataset.periodEnd });
-    if (assets.assets.length > 0) {
-      push(
-        'Dotation d’immobilisations à revoir',
-        'Une dotation déterministe a été calculée depuis le registre, mais aucune écriture n’est générée sans validation des comptes et des règles applicables.',
-        assets.assets.map((asset) => `IMMO:${asset.id ?? 'inconnu'}`),
-      );
-    }
 
     const rapprochements: Output['rapprochements'] = {};
     const nameTokens = companyNameTokens(String(((dataset.societe as { raison_sociale?: unknown }).raison_sociale) ?? ''));

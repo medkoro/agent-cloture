@@ -252,5 +252,870 @@
         "credit": 5000
       }
     ]
+  },
+  {
+    "id": "P-08",
+    "anomalie": "ANO-015",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "TVA 10 % sur frais bancaires comptabilisés TTC",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:E-2026-08-0012",
+      "GL:E-2026-08-0033"
+    ],
+    "lignes": [
+      {
+        "compte": "34552",
+        "debit": 40,
+        "credit": 0
+      },
+      {
+        "compte": "6147",
+        "debit": 0,
+        "credit": 40
+      }
+    ]
+  },
+  {
+    "id": "P-09",
+    "anomalie": "ANO-016",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Régularisation du compte d'attente (VIR reçu REF 88213 — à identifier)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "question_prealable": "Q01",
+    "preuves": [
+      "GL:A25",
+      "SIM:Q01"
+    ],
+    "lignes": [
+      {
+        "compte": "4497",
+        "debit": 7500,
+        "credit": 0
+      },
+      {
+        "compte": "2486",
+        "debit": 0,
+        "credit": 7500
+      }
+    ]
+  },
+  {
+    "id": "P-10",
+    "anomalie": "ANO-017",
+    "type": "standard",
+    "date": "2026-08-15",
+    "journal": "OD",
+    "libelle": "Apport en espèces du dirigeant en compte courant",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "question_prealable": "Q03",
+    "preuves": [
+      "SIM:Q03"
+    ],
+    "lignes": [
+      {
+        "compte": "5161",
+        "debit": 10000,
+        "credit": 0
+      },
+      {
+        "compte": "4463",
+        "debit": 0,
+        "credit": 10000
+      }
+    ]
+  },
+  {
+    "id": "P-11",
+    "anomalie": "ANO-018",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "TVA non déductible — règlement espèces TE-5498 au-delà de 5000 MAD",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:TE-5498"
+    ],
+    "lignes": [
+      {
+        "compte": "6142",
+        "debit": 1166.67,
+        "credit": 0
+      },
+      {
+        "compte": "34552",
+        "debit": 0,
+        "credit": 1166.67
+      }
+    ]
+  },
+  {
+    "id": "P-12",
+    "anomalie": "ANO-019",
+    "type": "standard",
+    "date": "2026-08-29",
+    "journal": "OD",
+    "libelle": "Écart de règlement FAC-2026-0426 (frais bancaires émetteur)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:FAC-2026-0426"
+    ],
+    "lignes": [
+      {
+        "compte": "6147",
+        "debit": 16.36,
+        "credit": 0
+      },
+      {
+        "compte": "34552",
+        "debit": 1.64,
+        "credit": 0
+      },
+      {
+        "compte": "34210001",
+        "tiers": "C001",
+        "debit": 0,
+        "credit": 18
+      }
+    ]
+  },
+  {
+    "id": "P-13",
+    "anomalie": "ANO-020",
+    "type": "standard",
+    "date": "2026-08-14",
+    "journal": "OD",
+    "libelle": "Perte de change réalisée C005 (10.62 → 10.575)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:FAC-2026-0425",
+      "BQ:banque_alpha:A09"
+    ],
+    "lignes": [
+      {
+        "compte": "6331",
+        "debit": 427.5,
+        "credit": 0
+      },
+      {
+        "compte": "34210005",
+        "tiers": "C005",
+        "debit": 0,
+        "credit": 427.5
+      }
+    ]
+  },
+  {
+    "id": "P-14",
+    "anomalie": "ANO-021",
+    "type": "standard",
+    "date": "2026-08-22",
+    "journal": "OD",
+    "libelle": "Perte de change réalisée F002 (9.18 → 9.26)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:INV-BW-2026-118",
+      "BQ:banque_alpha:A16"
+    ],
+    "lignes": [
+      {
+        "compte": "6331",
+        "debit": 960,
+        "credit": 0
+      },
+      {
+        "compte": "44110002",
+        "tiers": "F002",
+        "debit": 0,
+        "credit": 960
+      }
+    ]
+  },
+  {
+    "id": "P-15",
+    "anomalie": "ANO-022",
+    "type": "standard",
+    "date": "2026-08-25",
+    "journal": "VTE",
+    "libelle": "Facture client FAC-2026-0428 Clinique Al Amal SA non comptabilisée",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "DOC:justificatifs/FAC_VENTE/FAC-2026-0428_CliniqueAlAmal.pdf"
+    ],
+    "lignes": [
+      {
+        "compte": "34210004",
+        "tiers": "C004",
+        "debit": 12000,
+        "credit": 0
+      },
+      {
+        "compte": "7111",
+        "debit": 0,
+        "credit": 10000
+      },
+      {
+        "compte": "4455",
+        "debit": 0,
+        "credit": 2000
+      }
+    ]
+  },
+  {
+    "id": "P-16",
+    "anomalie": "ANO-023",
+    "type": "standard",
+    "date": "2026-08-01",
+    "journal": "OD",
+    "libelle": "Contre-passation FNP antérieure non reprise (REG-2026-07-88120)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:4417",
+      "GL:REG-2026-07-88120"
+    ],
+    "lignes": [
+      {
+        "compte": "4417",
+        "debit": 4560,
+        "credit": 0
+      },
+      {
+        "compte": "61251",
+        "debit": 0,
+        "credit": 4000
+      },
+      {
+        "compte": "3458",
+        "debit": 0,
+        "credit": 560
+      }
+    ]
+  },
+  {
+    "id": "P-17",
+    "anomalie": "ANO-024",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "FNP REDEC — Régie de Distribution Eau & Électricité — consommation du mois",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "contre_passation_le": "2026-09-01",
+    "preuves": [
+      "SIM:Q04"
+    ],
+    "lignes": [
+      {
+        "compte": "61251",
+        "debit": 4500,
+        "credit": 0
+      },
+      {
+        "compte": "3458",
+        "debit": 630,
+        "credit": 0
+      },
+      {
+        "compte": "4417",
+        "debit": 0,
+        "credit": 5130
+      }
+    ]
+  },
+  {
+    "id": "P-18",
+    "anomalie": "ANO-025",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Charge à payer — pièce reçue après la clôture",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "contre_passation_le": "2026-09-01",
+    "preuves": [
+      "DOC:justificatifs/RECUS_EN_SEPTEMBRE/CJN-2026-061_CabinetNour.pdf"
+    ],
+    "lignes": [
+      {
+        "compte": "61365",
+        "debit": 8000,
+        "credit": 0
+      },
+      {
+        "compte": "3458",
+        "debit": 1600,
+        "credit": 0
+      },
+      {
+        "compte": "4417",
+        "debit": 0,
+        "credit": 9600
+      }
+    ]
+  },
+  {
+    "id": "P-19",
+    "anomalie": "ANO-026",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Produit à établir — travaux réceptionnés non facturés (PV_reception_CliniqueAlAmal_2026-08-28.pdf)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "contre_passation_le": "2026-09-01",
+    "preuves": [
+      "DOC:justificatifs/COURRIERS/PV_reception_CliniqueAlAmal_2026-08-28.pdf",
+      "DOC:justificatifs/COURRIERS/Devis_DV-2026-118.pdf"
+    ],
+    "lignes": [
+      {
+        "compte": "3427",
+        "debit": 54000,
+        "credit": 0
+      },
+      {
+        "compte": "7124",
+        "debit": 0,
+        "credit": 45000
+      },
+      {
+        "compte": "4458",
+        "debit": 0,
+        "credit": 9000
+      }
+    ]
+  },
+  {
+    "id": "P-20",
+    "anomalie": "ANO-027",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Produit constaté d'avance Hôtel Riad Zitoun SARL (service à compter de 2026-09)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:FAC-2026-0427"
+    ],
+    "lignes": [
+      {
+        "compte": "7124",
+        "debit": 36000,
+        "credit": 0
+      },
+      {
+        "compte": "4491",
+        "debit": 0,
+        "credit": 36000
+      }
+    ]
+  },
+  {
+    "id": "P-21",
+    "anomalie": "ANO-028",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Charge constatée d'avance SoftCloud ERP SARL (11/12)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:SC-2026-1187"
+    ],
+    "lignes": [
+      {
+        "compte": "3491",
+        "debit": 33000,
+        "credit": 0
+      },
+      {
+        "compte": "6131",
+        "debit": 0,
+        "credit": 33000
+      }
+    ]
+  },
+  {
+    "id": "P-22",
+    "anomalie": "ANO-029",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Reprise mensuelle charge constatée d'avance (6134)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "OUVERTURE:3491",
+      "HISTO:6134"
+    ],
+    "lignes": [
+      {
+        "compte": "6134",
+        "debit": 1850,
+        "credit": 0
+      },
+      {
+        "compte": "3491",
+        "debit": 0,
+        "credit": 1850
+      }
+    ]
+  },
+  {
+    "id": "P-23",
+    "anomalie": "ANO-030",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Intérêts courus prêt O01 du 2026-08-05 au 2026-08-31",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "contre_passation_le": "2026-09-01",
+    "preuves": [
+      "ECHEANCIER:O01"
+    ],
+    "lignes": [
+      {
+        "compte": "6311",
+        "debit": 2065.28,
+        "credit": 0
+      },
+      {
+        "compte": "4493",
+        "debit": 0,
+        "credit": 2065.28
+      }
+    ]
+  },
+  {
+    "id": "P-24",
+    "anomalie": "ANO-031",
+    "type": "standard",
+    "date": "2026-08-05",
+    "journal": "OD",
+    "libelle": "Échéance du prêt : part intérêts",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:OMEGA:O01",
+      "ECHEANCIER:O01"
+    ],
+    "lignes": [
+      {
+        "compte": "6311",
+        "debit": 2433.43,
+        "credit": 0
+      },
+      {
+        "compte": "1481",
+        "debit": 0,
+        "credit": 2433.43
+      }
+    ]
+  },
+  {
+    "id": "P-25",
+    "anomalie": "ANO-032",
+    "type": "standard",
+    "date": "2026-08-12",
+    "journal": "OD",
+    "libelle": "Immobilisation informatique (IT-2026-0933) + TVA sur immobilisation",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "question_prealable": "Q02",
+    "preuves": [
+      "GL:IT-2026-0933",
+      "SIM:Q02"
+    ],
+    "lignes": [
+      {
+        "compte": "2355",
+        "debit": 14500,
+        "credit": 0
+      },
+      {
+        "compte": "34551",
+        "debit": 2900,
+        "credit": 0
+      },
+      {
+        "compte": "61253",
+        "debit": 0,
+        "credit": 14500
+      },
+      {
+        "compte": "34552",
+        "debit": 0,
+        "credit": 2900
+      }
+    ]
+  },
+  {
+    "id": "P-26",
+    "anomalie": "ANO-033",
+    "type": "standard",
+    "date": "2026-08-12",
+    "journal": "OD",
+    "libelle": "Usage personnel du dirigeant — compte courant associé débiteur (IT-2026-0933)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "question_prealable": "Q02",
+    "preuves": [
+      "GL:IT-2026-0933",
+      "SIM:Q02"
+    ],
+    "lignes": [
+      {
+        "compte": "3463",
+        "debit": 17400,
+        "credit": 0
+      },
+      {
+        "compte": "61253",
+        "debit": 0,
+        "credit": 14500
+      },
+      {
+        "compte": "34552",
+        "debit": 0,
+        "credit": 2900
+      }
+    ]
+  },
+  {
+    "id": "P-27",
+    "anomalie": "ANO-034",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Dotations aux amortissements du mois",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "IMMO:registre"
+    ],
+    "lignes": [
+      {
+        "compte": "6193",
+        "debit": 12758.34,
+        "credit": 0
+      },
+      {
+        "compte": "2834",
+        "debit": 0,
+        "credit": 10666.67
+      },
+      {
+        "compte": "28351",
+        "debit": 0,
+        "credit": 500
+      },
+      {
+        "compte": "28355",
+        "debit": 0,
+        "credit": 1591.67
+      }
+    ]
+  },
+  {
+    "id": "P-28",
+    "anomalie": "ANO-035",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Variation de stock de marchandises — inventaire 2026-08-31",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "question_prealable": "Q07",
+    "preuves": [
+      "STOCK:inventaire_2026-08-31",
+      "SIM:Q07"
+    ],
+    "lignes": [
+      {
+        "compte": "3111",
+        "debit": 67350,
+        "credit": 0
+      },
+      {
+        "compte": "6114",
+        "debit": 0,
+        "credit": 67350
+      }
+    ]
+  },
+  {
+    "id": "P-29",
+    "anomalie": "ANO-036",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Réévaluation dette/créance USD au cours BAM du 2026-08-31",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "contre_passation_le": "2026-09-01",
+    "preuves": [
+      "FX:2026-08-31",
+      "GL:44110002"
+    ],
+    "lignes": [
+      {
+        "compte": "3702",
+        "tiers": "F002",
+        "debit": 1040,
+        "credit": 0
+      },
+      {
+        "compte": "44110002",
+        "tiers": "F002",
+        "debit": 0,
+        "credit": 1040
+      },
+      {
+        "compte": "6393",
+        "debit": 1040,
+        "credit": 0
+      },
+      {
+        "compte": "4506",
+        "debit": 0,
+        "credit": 1040
+      }
+    ]
+  },
+  {
+    "id": "P-30",
+    "anomalie": "ANO-037",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "TVA non déductible — Carburant — véhicule 5008 (gérant)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:TK-0808"
+    ],
+    "lignes": [
+      {
+        "compte": "6125",
+        "debit": 100,
+        "credit": 0
+      },
+      {
+        "compte": "34552",
+        "debit": 0,
+        "credit": 100
+      }
+    ]
+  },
+  {
+    "id": "P-31",
+    "anomalie": "ANO-038",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "TVA non déductible — Restaurant Dar Mima — déjeuner clients",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:ND-0813"
+    ],
+    "lignes": [
+      {
+        "compte": "61436",
+        "debit": 120,
+        "credit": 0
+      },
+      {
+        "compte": "34552",
+        "debit": 0,
+        "credit": 120
+      }
+    ]
+  },
+  {
+    "id": "P-32",
+    "anomalie": "ANO-039",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Paie du mois",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "PAIE:2026-08"
+    ],
+    "lignes": [
+      {
+        "compte": "61711",
+        "debit": 59400,
+        "credit": 0
+      },
+      {
+        "compte": "4441",
+        "debit": 0,
+        "credit": 2928.36
+      },
+      {
+        "compte": "4452",
+        "debit": 0,
+        "credit": 4724.25
+      },
+      {
+        "compte": "4432",
+        "debit": 0,
+        "credit": 51747.39
+      },
+      {
+        "compte": "61741",
+        "debit": 10372.26,
+        "credit": 0
+      },
+      {
+        "compte": "4441",
+        "debit": 0,
+        "credit": 10372.26
+      },
+      {
+        "compte": "4432",
+        "debit": 2000,
+        "credit": 0
+      },
+      {
+        "compte": "3431",
+        "debit": 0,
+        "credit": 2000
+      }
+    ]
+  },
+  {
+    "id": "P-33",
+    "anomalie": "ANO-040",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Majoration de retard CNSS (3 %)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:ALPHA:A20",
+      "DECL:cnss_2026-07"
+    ],
+    "lignes": [
+      {
+        "compte": "6583",
+        "debit": 385.81,
+        "credit": 0
+      },
+      {
+        "compte": "4441",
+        "debit": 0,
+        "credit": 385.81
+      }
+    ]
+  },
+  {
+    "id": "P-34",
+    "anomalie": "ANO-041",
+    "type": "standard",
+    "date": "2026-08-06",
+    "journal": "OD",
+    "libelle": "Retenue à la source sur loyer (bailleur personne physique)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:ALPHA:A04",
+      "DOC:bail"
+    ],
+    "lignes": [
+      {
+        "compte": "6131",
+        "debit": 3000,
+        "credit": 0
+      },
+      {
+        "compte": "4452",
+        "debit": 0,
+        "credit": 3000
+      }
+    ]
+  },
+  {
+    "id": "P-35",
+    "anomalie": "ANO-042",
+    "type": "standard",
+    "date": "2026-08-17",
+    "journal": "OD",
+    "libelle": "Note de frais avancée par Youssef ALAOUI (gérant, 60 %)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "DOC:justificatifs/NOTES_DE_FRAIS/Facture_hotel_gerant_2026-08-17.pdf"
+    ],
+    "lignes": [
+      {
+        "compte": "61431",
+        "debit": 2000,
+        "credit": 0
+      },
+      {
+        "compte": "34552",
+        "debit": 200,
+        "credit": 0
+      },
+      {
+        "compte": "4463",
+        "debit": 0,
+        "credit": 2200
+      }
+    ]
+  },
+  {
+    "id": "P-36",
+    "anomalie": "ANO-043",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Déclaration de TVA du mois (régime encaissement)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "TVA:detail"
+    ],
+    "lignes": [
+      {
+        "compte": "4455",
+        "debit": 55000,
+        "credit": 0
+      },
+      {
+        "compte": "34552",
+        "debit": 0,
+        "credit": 46283.49
+      },
+      {
+        "compte": "34551",
+        "debit": 0,
+        "credit": 2900
+      },
+      {
+        "compte": "4456",
+        "debit": 0,
+        "credit": 5816.51
+      }
+    ]
   }
 ]
