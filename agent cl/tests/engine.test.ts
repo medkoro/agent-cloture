@@ -9,12 +9,32 @@ import { OutputSchema } from '../src/contracts/output.js';
 const dataset = new URL('../../datasets/atlas_negoce/', import.meta.url).pathname.replace(/^\//, '').replace(/\//g, '\\');
 
 describe('ClosingEngine générique', () => {
-  it('does not invent entries when source evidence is insufficient', async () => {
+  it('derives corrections from injected data without inventing accounts or amounts', async () => {
     const output = await new ClosingEngine(dataset, '2026-08').run();
-    expect(output.propositions).toHaveLength(0);
     expect(OutputSchema.safeParse(output).success).toBe(true);
     expect(JSON.stringify(output)).not.toContain('Atlas Négoce');
-    expect(JSON.stringify(output)).not.toContain('P-01');
+    expect(output.propositions.length).toBeGreaterThan(0);
+    // Chaque proposition doit être équilibrée (sauf type complement) et sourcée.
+    for (const proposition of output.propositions) {
+      const debit = proposition.lignes.reduce((total, line) => total + Math.round(line.debit * 100), 0);
+      const credit = proposition.lignes.reduce((total, line) => total + Math.round(line.credit * 100), 0);
+      if (proposition.type !== 'complement') expect(debit).toBe(credit);
+      expect(proposition.preuves.length).toBeGreaterThan(0);
+      expect(proposition.statut).toBe('proposee');
+      expect(proposition.approuve_par).toBeUndefined();
+    }
+    // La ligne manquante de l'OD à sens unique (Froid Service) est complétée depuis le
+    // justificatif et tiers.csv — aucun compte n'est en dur dans le moteur.
+    const complement = output.propositions.find((proposition) => proposition.type === 'complement');
+    expect(complement?.lignes).toEqual([{ compte: '44110013', tiers: 'F013', debit: 0, credit: 850 }]);
+  });
+
+  it('résout les rapprochements bancaires à écart résiduel nul après corrections', async () => {
+    const output = await new ClosingEngine(dataset, '2026-08').run();
+    expect(output.rapprochements.banque_alpha.ecart_residuel).toBe(0);
+    expect(output.rapprochements.banque_omega.ecart_residuel).toBe(0);
+    expect(output.rapprochements.banque_alpha.solde_gl_apres).toBe(358096.26);
+    expect(output.rapprochements.banque_omega.solde_gl_apres).toBe(246075.19);
   });
 });
 

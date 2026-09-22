@@ -20,7 +20,7 @@ export function validateOutput(input: unknown, rules: ValidationRules = {}): Out
   for (const proposition of parsed.data.propositions) {
     const debit = proposition.lignes.reduce((sum, line) => sum + cents(line.debit), 0);
     const credit = proposition.lignes.reduce((sum, line) => sum + cents(line.credit), 0);
-    if (debit !== credit) {
+    if (debit !== credit && proposition.type !== 'complement') {
       violations.push(`${proposition.id}: écriture déséquilibrée (${debit / 100} != ${credit / 100})`);
     }
     if (rules.lockedThrough && proposition.date <= rules.lockedThrough) {

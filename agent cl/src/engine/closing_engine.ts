@@ -1,9 +1,20 @@
-import type { Anomaly, Output } from '../contracts/output.js';
+import type { Anomaly, Output, Proposition } from '../contracts/output.js';
 import { calculateAssets } from './assets.js';
 import { detectInternalTransfers, detectTruncations, matchBankToLedger, verifyStatementChecksum, type StatementChecksum, type SuspensItem, type TruncationFinding } from './bank_engine.js';
 import { loadClosingDataset, nextMonthEnd, type ClosingDataset, type Row } from './dataset.js';
 import { checkLedgerIntegrity } from './integrity.js';
 import { cents, mad } from './money.js';
+import {
+  draftCashWithdrawalReclassifications,
+  draftComplementForUnbalancedEntry,
+  draftInternalTransferReclassifications,
+  draftReturnedChequePostings,
+  draftTruncationCorrection,
+  draftUnrecordedFeePostings,
+  findDuplicateInvoiceReversals,
+  inTransitItems,
+  type PostingDraft,
+} from './postings.js';
 import { calculateVat, calculateVatEncaissement, vatAccountTypes, type VatResult } from './vat_engine.js';
 
 const numberValue = (value: unknown): number => {
@@ -26,8 +37,8 @@ function statementBalance(header: Record<string, unknown>): number {
   return parsed;
 }
 
-function anomaly(id: string, title: string, description: string, evidence: string[], gravite: string = 'moyenne'): Anomaly {
-  return { id, titre: title, description, gravite, preuves: evidence, question: null };
+function anomaly(id: string, title: string, description: string, evidence: string[], gravite: string = 'moyenne', actionAttendue?: string): Anomaly {
+  return { id, titre: title, description, gravite, preuves: evidence, question: null, ...(actionAttendue ? { action_attendue: actionAttendue } : {}) };
 }
 
 function missingEvidenceAnomalies(dataset: ClosingDataset, anomalies: Anomaly[]): void {
@@ -82,26 +93,56 @@ export class ClosingEngine {
   async run(): Promise<Output> {
     const dataset = await loadClosingDataset(this.datasetDir, this.period);
     const anomalies: Anomaly[] = [];
-    const push = (titre: string, description: string, preuves: string[], gravite = 'moyenne'): void => {
-      anomalies.push(anomaly(`ANO-${String(anomalies.length + 1).padStart(3, '0')}`, titre, description, preuves, gravite));
+    const propositions: Proposition[] = [];
+    let propositionCounter = 0;
+    const allocatePropositionIds = (count: number): string[] => {
+      propositionCounter += 1;
+      const base = `P-${String(propositionCounter).padStart(2, '0')}`;
+      if (count <= 1) return [base];
+      return Array.from({ length: count }, (_, index) => `${base}${String.fromCharCode(65 + index)}`);
+    };
+    const push = (titre: string, description: string, preuves: string[], gravite = 'moyenne', actionAttendue?: string): string => {
+      const id = `ANO-${String(anomalies.length + 1).padStart(3, '0')}`;
+      anomalies.push(anomaly(id, titre, description, preuves, gravite, actionAttendue));
+      return id;
+    };
+    const addProposition = (anomalieId: string, draft: PostingDraft, id?: string): void => {
+      propositions.push({
+        id: id ?? allocatePropositionIds(1)[0],
+        anomalie: anomalieId,
+        type: draft.type,
+        date: draft.date,
+        journal: draft.journal,
+        libelle: draft.libelle,
+        certitude: draft.certitude,
+        statut: 'proposee',
+        preuves: draft.preuves,
+        lignes: draft.lignes,
+      });
     };
 
     const lockedFin = String(((dataset.societe.derniere_periode_verrouillee as { fin?: unknown } | null | undefined)?.fin) ?? '');
     for (const issue of checkLedgerIntegrity(dataset.ledger, dataset.chart, lockedFin)) {
       const piece = issue.piece ?? issue.ecriture_id ?? 'inconnue';
       if (issue.type === 'ecriture_desequilibree') {
-        push(
+        const anomalieId = push(
           'Ecriture desequilibree',
           `L’écriture ${issue.ecriture_id ?? piece} présente un écart de ${issue.ecart ?? 0} MAD ; aucune écriture corrective n’est générée.`,
           [`GL:${piece}`],
           'bloquante',
         );
+        const entryDate = dataset.ledger.find((row) => row.ecriture_id === issue.ecriture_id)?.date_ecriture ?? '';
+        if (issue.ecriture_id && entryDate > lockedFin) {
+          const draft = draftComplementForUnbalancedEntry(issue.ecriture_id, dataset.ledger, dataset.documents, dataset.tiers);
+          if (draft) addProposition(anomalieId, draft);
+        }
       } else if (issue.type === 'periode_verrouillee') {
         push(
           'Periode verrouillee',
           `L’écriture ${issue.ecriture_id ?? piece} est datée dans une période verrouillée ; aucune écriture corrective n’est générée.`,
           [`GL:${piece}`],
           'bloquante',
+          'escalade_expert_comptable',
         );
       } else if (issue.type === 'compte_collectif') {
         push(
@@ -135,26 +176,74 @@ export class ClosingEngine {
         );
       }
       for (const finding of truncationsByBank.get(bank.key) ?? []) {
-        push(
+        const anomalieId = push(
           'Extraction tronquee',
           `La ligne ${finding.id_ligne} a été extraite à ${finding.montant_extrait} MAD au lieu de ${finding.montant_corrige} MAD (pièce ${finding.piece}) ; le montant corrigé est proposé.`,
           [`BQ:${bank.key}:${finding.id_ligne}`],
           'haute',
         );
+        const draft = draftTruncationCorrection(finding, dataset.banks, dataset.ledger);
+        if (draft) addProposition(anomalieId, draft);
       }
     }
 
+    const banksLike = dataset.banks.map((bank) => ({ key: bank.key, name: bank.name, rows: bank.rows, header: bank.header }));
     const transfers = detectInternalTransfers(dataset.banks.map((bank) => ({ key: bank.key, rows: bank.rows })));
     for (const transfer of transfers) {
-      push(
+      const anomalieId = push(
         'Mouvement de virement interne a comptabiliser via virements de fonds',
         `Le mouvement ${transfer.source.id_ligne} (${transfer.source.key}) vers ${transfer.cible.id_ligne} (${transfer.cible.key}) de ${transfer.montant} MAD doit transiter par les virements de fonds.`,
         [`BQ:${transfer.source.key}:${transfer.source.id_ligne}`, `BQ:${transfer.cible.key}:${transfer.cible.id_ligne}`],
         'haute',
       );
+      for (const reclassification of draftInternalTransferReclassifications({ transfers: [transfer], banks: banksLike, ledger: dataset.ledger, chart: dataset.chart })) {
+        addProposition(anomalieId, reclassification.draft);
+      }
     }
 
     missingEvidenceAnomalies(dataset, anomalies);
+
+    for (const reversal of findDuplicateInvoiceReversals(dataset.ledger, dataset.periodEnd)) {
+      const anomalieId = push(
+        'Facture fournisseur en doublon',
+        `L’écriture ${reversal.duplicateEcritureId} duplique l’écriture ${reversal.keeperEcritureId} déjà justifiée ; une contre-passation est proposée.`,
+        [`GL:${reversal.duplicateEcritureId}`, `GL:${reversal.keeperEcritureId}`],
+        'haute',
+      );
+      addProposition(anomalieId, reversal.draft);
+    }
+
+    const feePostings = draftUnrecordedFeePostings({ banks: banksLike, ledger: dataset.ledger, chart: dataset.chart, fiscal: dataset.fiscal });
+    if (feePostings.length > 0) {
+      const anomalieId = push(
+        'Frais bancaires débités non comptabilisés',
+        `Les frais suivants apparaissent sur les relevés bancaires sans écriture correspondante dans le grand livre : ${feePostings.map((item) => `${item.bankKey}:${item.idLigne}`).join(', ')}.`,
+        feePostings.map((item) => `BQ:${item.bankKey}:${item.idLigne}`),
+        'moyenne',
+      );
+      const ids = allocatePropositionIds(feePostings.length);
+      feePostings.forEach((item, index) => addProposition(anomalieId, item.draft, ids[index]));
+    }
+
+    for (const cheque of draftReturnedChequePostings({ suspensByBank: Object.fromEntries(suspensByBank), banks: banksLike, tiers: dataset.tiers })) {
+      const anomalieId = push(
+        'Chèque client impayé',
+        `Le règlement ${cheque.bankKey}:${cheque.idLigne} a été rejeté par la banque ; une extourne du client concerné est proposée.`,
+        [`BQ:${cheque.bankKey}:${cheque.idLigne}`],
+        'haute',
+      );
+      addProposition(anomalieId, cheque.draft);
+    }
+
+    for (const withdrawal of draftCashWithdrawalReclassifications({ banks: banksLike, ledger: dataset.ledger, chart: dataset.chart, societe: dataset.societe })) {
+      const anomalieId = push(
+        'Retrait DAB comptabilisé en charge',
+        `Le retrait ${withdrawal.bankKey}:${withdrawal.idLigne} alimente la caisse mais a été saisi sur un compte de charge ; une reclassification est proposée.`,
+        [`BQ:${withdrawal.bankKey}:${withdrawal.idLigne}`],
+        'moyenne',
+      );
+      addProposition(anomalieId, withdrawal.draft);
+    }
 
     const tvaConfig = dataset.fiscal.tva as Record<string, unknown> | undefined;
     const regime = String(tvaConfig?.regime_dossier ?? 'inconnu');
@@ -236,14 +325,24 @@ export class ClosingEngine {
           ecart: finding.ecart,
         })),
       ];
+      const affecting = propositions.filter((proposition) => proposition.lignes.some((line) => line.compte === account));
+      const netCents = affecting.reduce((total, proposition) =>
+        total + proposition.lignes
+          .filter((line) => line.compte === account)
+          .reduce((sum, line) => sum + cents(line.debit) - cents(line.credit), 0), 0);
+      const glApres = mad(glBefore + netCents / 100);
+      const transit = inTransitItems({ key: bank.key, name: bank.name, rows: bank.rows, header: bank.header }, dataset.ledger)
+        .map((item) => ({ ...item, libelle: redact(item.libelle) }));
+      const transitDeltaCents = transit.reduce((total, item) => total + (item.type === 'remise_non_creditee' ? cents(item.montant) : -cents(item.montant)), 0);
+      const ecartResiduel = mad((cents(soldeReleve) + transitDeltaCents - cents(glApres)) / 100);
       rapprochements[bank.key] = {
         solde_releve: soldeReleve,
         solde_gl_avant: glBefore,
-        solde_gl_apres: glBefore,
-        ecart_residuel: mad((cents(soldeReleve) - cents(glBefore)) / 100),
-        corrections: [],
+        solde_gl_apres: glApres,
+        ecart_residuel: ecartResiduel,
+        corrections: affecting.map((proposition) => proposition.id),
         corrections_candidates: correctionsCandidates,
-        suspens: suspens as unknown as Record<string, unknown>[],
+        suspens: transit as unknown as Record<string, unknown>[],
         controle_totaux_imprimes: { ...checksum, ecart: mad((cents(checksum.ecart_debit) + cents(checksum.ecart_credit)) / 100) },
       };
     }
@@ -260,7 +359,7 @@ export class ClosingEngine {
     }
 
     return {
-      propositions: [],
+      propositions,
       anomalies,
       tva,
       rapprochements,

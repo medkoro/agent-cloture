@@ -2,9 +2,13 @@
   "banque_alpha": {
     "solde_releve": 351616.26,
     "solde_gl_avant": 382327.26,
-    "solde_gl_apres": 382327.26,
-    "ecart_residuel": -30711,
-    "corrections": [],
+    "solde_gl_apres": 358096.26,
+    "ecart_residuel": 0,
+    "corrections": [
+      "P-05A",
+      "P-05B",
+      "P-06"
+    ],
     "corrections_candidates": [
       {
         "banque": "banque_alpha",
@@ -49,371 +53,18 @@
     ],
     "suspens": [
       {
-        "type": "non_categorise",
-        "id_ligne": "A01",
-        "libelle": "PRLV SOFTCLOUD ERP SARL ABONNEMENT SC-2026-1187",
-        "montant": 43200,
-        "date": "2026-08-01"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A02",
-        "libelle": "CHQ N 0004512",
-        "montant": 8400,
-        "date": "2026-08-04"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A04",
-        "libelle": "VIR EMIS BENNANI KARIM LOYER AOUT 2026",
-        "montant": 17000,
-        "date": "2026-08-06"
-      },
-      {
-        "type": "frais_non_comptabilise",
-        "id_ligne": "A06",
-        "libelle": "FRAIS TENUE DE COMPTE JUILLET TTC",
-        "montant": 110,
-        "date": "2026-08-08"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A07",
-        "libelle": "VIR EMIS ELECTRODISTRIB MAROC FACT ED-77812",
-        "montant": 214560,
-        "date": "2026-08-11"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A08",
-        "libelle": "VIR EMIS INFOTECH DISTRIBUTION IT-2026-0933",
-        "montant": 34800,
-        "date": "2026-08-12"
-      },
-      {
-        "type": "frais_non_comptabilise",
-        "id_ligne": "A10",
-        "libelle": "COM RECEPTION VIR INTL + TVA",
-        "montant": 165,
-        "date": "2026-08-14"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A11",
-        "libelle": "PRLV REDEC FACTURE REG-2026-07-88120",
-        "montant": 4560,
-        "date": "2026-08-18"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A12",
-        "libelle": "RETRAIT GAB 004512 CASA ABDELMOUMEN",
-        "montant": 5000,
-        "date": "2026-08-18"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A13",
-        "libelle": "VIR EMIS VERS BANQUE OMEGA",
-        "montant": 50000,
-        "date": "2026-08-19"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A16",
-        "libelle": "VIR INTL EMIS SHENZHEN BRIGHTWAY USD 12000,00 COURS 9,2600",
-        "montant": 111120,
-        "date": "2026-08-22"
-      },
-      {
-        "type": "frais_non_comptabilise",
-        "id_ligne": "A17",
-        "libelle": "COM VIR INTL EMIS + TVA",
-        "montant": 330,
-        "date": "2026-08-22"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A18",
-        "libelle": "PRLV TELCONET SA FACTURE AOUT",
-        "montant": 2400,
-        "date": "2026-08-26"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A19",
-        "libelle": "VIR EMIS DGI TVA 07/2026 SIMPL",
-        "montant": 18240,
-        "date": "2026-08-27"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A20",
-        "libelle": "VIR EMIS CNSS DAMANCOM 07/2026",
-        "montant": 12860.4,
+        "type": "cheque_emis_non_debite",
+        "montant": 3120,
+        "ref": "CHQ-0004521",
+        "libelle": "Chèque n° 0004521 remis à Transit Express",
         "date": "2026-08-28"
       },
       {
-        "type": "impaye",
-        "id_ligne": "A23",
-        "libelle": "CHQ IMPAYE N 7781204 BTP CHAOUIA MOTIF SANS PROVISION",
-        "montant": 24000,
-        "date": "2026-08-30"
-      },
-      {
-        "type": "frais_non_comptabilise",
-        "id_ligne": "A24",
-        "libelle": "FRAIS REJET CHQ + TVA",
-        "montant": 66,
-        "date": "2026-08-30"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "A26",
-        "libelle": "VIR EMIS SALAIRES AOUT 2026 (6 BENEF)",
-        "montant": 49747.39,
-        "date": "2026-08-31"
-      },
-      {
-        "type": "encaissement_non_comptabilise",
-        "id_ligne": "A03",
-        "libelle": "VIR RECU GROUPE IMMOBILIER ANFA PARK REF FAC 2026-0412",
-        "montant": 118800,
-        "date": "2026-08-05"
-      },
-      {
-        "type": "encaissement_non_comptabilise",
-        "id_ligne": "A05",
-        "libelle": "VIR RECU CLINIQUE AL AMAL SA",
-        "montant": 50000,
-        "date": "2026-08-07"
-      },
-      {
-        "type": "encaissement_non_comptabilise",
-        "id_ligne": "A09",
-        "libelle": "VIR INTL RECU EUROLUX SAS EUR 9500,00 COURS 10,5750",
-        "montant": 100462.5,
-        "date": "2026-08-14"
-      },
-      {
-        "type": "encaissement_non_comptabilise",
-        "id_ligne": "A14",
-        "libelle": "VIR RECU HOTEL RIAD ZITOUN FAC 2026-0427",
-        "montant": 43200,
-        "date": "2026-08-20"
-      },
-      {
-        "type": "encaissement_non_comptabilise",
-        "id_ligne": "A21",
-        "libelle": "VIR RECU CLINIQUE AL AMAL SA SOLDE",
-        "montant": 46000,
-        "date": "2026-08-29"
-      },
-      {
-        "type": "encaissement_non_comptabilise",
-        "id_ligne": "A22",
-        "libelle": "VIR RECU GRP IMMOBILIER ANFA PARK FAC 0426",
-        "montant": 71982,
-        "date": "2026-08-29"
-      },
-      {
-        "type": "encaissement_non_comptabilise",
-        "id_ligne": "A25",
-        "libelle": "VIR RECU REF 88213",
-        "montant": 7500,
-        "date": "2026-08-31"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A01",
-        "libelle": "PRLV SoftCloud SC-2026-1187",
-        "montant": 43200,
-        "date": "2026-08-01",
-        "piece": "A01"
-      },
-      {
         "type": "remise_non_creditee",
-        "ref": "A03",
-        "libelle": "VIR reçu Anfa Park FAC 2026-0412",
-        "montant": 118800,
-        "date": "2026-08-05",
-        "piece": "A03"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A04",
-        "libelle": "Loyer août — M. Bennani",
-        "montant": 17000,
-        "date": "2026-08-06",
-        "piece": "A04"
-      },
-      {
-        "type": "remise_non_creditee",
-        "ref": "A05",
-        "libelle": "VIR reçu Clinique Al Amal",
-        "montant": 50000,
-        "date": "2026-08-07",
-        "piece": "A05"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A06",
-        "libelle": "Frais tenue de compte",
-        "montant": 110,
-        "date": "2026-08-08",
-        "piece": "A06"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A07",
-        "libelle": "VIR ElectroDistrib ED-77812",
-        "montant": 214560,
-        "date": "2026-08-11",
-        "piece": "A07"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A08",
-        "libelle": "VIR InfoTech IT-2026-0933",
-        "montant": 34800,
-        "date": "2026-08-12",
-        "piece": "A08"
-      },
-      {
-        "type": "remise_non_creditee",
-        "ref": "A09",
-        "libelle": "VIR reçu EUROLUX FAC 2026-0425",
-        "montant": 100462.5,
-        "date": "2026-08-14",
-        "piece": "A09"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A11",
-        "libelle": "PRLV REDEC juillet",
-        "montant": 4560,
-        "date": "2026-08-18",
-        "piece": "A11"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A12",
-        "libelle": "Retrait GAB",
-        "montant": 5000,
-        "date": "2026-08-18",
-        "piece": "A12"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A13",
-        "libelle": "Virement vers Banque Omega",
-        "montant": 50000,
-        "date": "2026-08-19",
-        "piece": "A13"
-      },
-      {
-        "type": "remise_non_creditee",
-        "ref": "A14",
-        "libelle": "VIR reçu Riad Zitoun",
-        "montant": 43200,
-        "date": "2026-08-20",
-        "piece": "A14"
-      },
-      {
-        "type": "remise_non_creditee",
-        "ref": "A15",
-        "libelle": "Remise chèque BTP Chaouia",
-        "montant": 24000,
-        "date": "2026-08-21",
-        "piece": "A15"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A16",
-        "libelle": "VIR intl Shenzhen Brightway (USD 12 000 @ 9,26)",
-        "montant": 111120,
-        "date": "2026-08-22",
-        "piece": "A16"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A17",
-        "libelle": "Commission virement international",
-        "montant": 330,
-        "date": "2026-08-22",
-        "piece": "A17"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A18",
-        "libelle": "PRLV TelcoNet",
-        "montant": 2400,
-        "date": "2026-08-26",
-        "piece": "A18"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A19",
-        "libelle": "Paiement TVA juillet 2026",
-        "montant": 18240,
-        "date": "2026-08-27",
-        "piece": "A19"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A20",
-        "libelle": "Paiement CNSS juillet 2026",
-        "montant": 12860.4,
-        "date": "2026-08-28",
-        "piece": "A20"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "CHQ-0004521",
-        "libelle": "Chèque n° 0004521 remis à Transit Express",
-        "montant": 3120,
-        "date": "2026-08-28",
-        "piece": "CHQ-0004521"
-      },
-      {
-        "type": "remise_non_creditee",
-        "ref": "A21",
-        "libelle": "VIR reçu Clinique Al Amal solde",
-        "montant": 46000,
-        "date": "2026-08-29",
-        "piece": "A21"
-      },
-      {
-        "type": "remise_non_creditee",
-        "ref": "A22",
-        "libelle": "VIR reçu Anfa Park FAC 0426",
-        "montant": 71982,
-        "date": "2026-08-29",
-        "piece": "A22"
-      },
-      {
-        "type": "remise_non_creditee",
+        "montant": 9600,
         "ref": "RCHQ-0831",
         "libelle": "Remise chèque n° 551903 Anfa Park (bordereau 0831)",
-        "montant": 9600,
-        "date": "2026-08-31",
-        "piece": "RCHQ-0831"
-      },
-      {
-        "type": "remise_non_creditee",
-        "ref": "A25",
-        "libelle": "VIR reçu REF 88213 — à identifier",
-        "montant": 7500,
-        "date": "2026-08-31",
-        "piece": "A25"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "A26",
-        "libelle": "Virement salaires août",
-        "montant": 49747.39,
-        "date": "2026-08-31",
-        "piece": "A26"
+        "date": "2026-08-31"
       }
     ],
     "controle_totaux_imprimes": {
@@ -434,9 +85,12 @@
   "banque_omega": {
     "solde_releve": 246075.19,
     "solde_gl_avant": 250295.19,
-    "solde_gl_apres": 250295.19,
-    "ecart_residuel": -4220,
-    "corrections": [],
+    "solde_gl_apres": 246075.19,
+    "ecart_residuel": 0,
+    "corrections": [
+      "P-02",
+      "P-05C"
+    ],
     "corrections_candidates": [
       {
         "banque": "banque_omega",
@@ -456,60 +110,7 @@
         "ecart": 4000
       }
     ],
-    "suspens": [
-      {
-        "type": "non_categorise",
-        "id_ligne": "O01",
-        "libelle": "ECHEANCE PRET 77120 N 18",
-        "montant": 11739.69,
-        "date": "2026-08-05"
-      },
-      {
-        "type": "non_categorise",
-        "id_ligne": "O03",
-        "libelle": "VIR EMIS TRANSIT EXPRESS TE-5521",
-        "montant": 365.12,
-        "date": "2026-08-25"
-      },
-      {
-        "type": "frais_non_comptabilise",
-        "id_ligne": "O04",
-        "libelle": "FRAIS ET COMMISSIONS AOUT + TVA",
-        "montant": 220,
-        "date": "2026-08-28"
-      },
-      {
-        "type": "encaissement_non_comptabilise",
-        "id_ligne": "O02",
-        "libelle": "VIR RECU BANQUE ALPHA",
-        "montant": 50000,
-        "date": "2026-08-19"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "O01",
-        "libelle": "Échéance prêt 77120 n°18",
-        "montant": 11739.69,
-        "date": "2026-08-05",
-        "piece": "O01"
-      },
-      {
-        "type": "remise_non_creditee",
-        "ref": "O02",
-        "libelle": "VIR reçu Négoce",
-        "montant": 50000,
-        "date": "2026-08-19",
-        "piece": "O02"
-      },
-      {
-        "type": "cheque_emis_non_debite",
-        "ref": "O03",
-        "libelle": "VIR Transit Express TE-5521",
-        "montant": 365.12,
-        "date": "2026-08-25",
-        "piece": "O03"
-      }
-    ],
+    "suspens": [],
     "controle_totaux_imprimes": {
       "solde_initial": 212400,
       "total_debit_extrait": 12324.81,

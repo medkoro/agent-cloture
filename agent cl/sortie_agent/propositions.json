@@ -1,1 +1,256 @@
-[]
+[
+  {
+    "id": "P-01",
+    "anomalie": "ANO-003",
+    "type": "complement",
+    "date": "2026-08-22",
+    "journal": "OD",
+    "libelle": "Complément de l'écriture incomplète OD-2026-08-0142",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:E-2026-08-0031",
+      "DOC:justificatifs/FAC_ACHAT/FS-2231_FroidService.pdf"
+    ],
+    "lignes": [
+      {
+        "compte": "44110013",
+        "tiers": "F013",
+        "debit": 0,
+        "credit": 850
+      }
+    ]
+  },
+  {
+    "id": "P-02",
+    "anomalie": "ANO-005",
+    "type": "standard",
+    "date": "2026-08-25",
+    "journal": "OD",
+    "libelle": "Correction du montant tronqué O03 (4365.12 et non 365.12)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:banque_omega:O03",
+      "GL:E-2026-08-0035",
+      "CALC:365.12+4000=4365.12"
+    ],
+    "lignes": [
+      {
+        "compte": "44110012",
+        "tiers": "F012",
+        "debit": 4000,
+        "credit": 0
+      },
+      {
+        "compte": "51412",
+        "debit": 0,
+        "credit": 4000
+      }
+    ]
+  },
+  {
+    "id": "P-03",
+    "anomalie": "ANO-006",
+    "type": "standard",
+    "date": "2026-08-19",
+    "journal": "OD",
+    "libelle": "Virement interne enregistré à tort en produit (banque_omega:O02)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:banque_alpha:A13",
+      "BQ:banque_omega:O02",
+      "GL:E-2026-08-0026"
+    ],
+    "lignes": [
+      {
+        "compte": "7111",
+        "debit": 50000,
+        "credit": 0
+      },
+      {
+        "compte": "5115",
+        "debit": 0,
+        "credit": 50000
+      }
+    ]
+  },
+  {
+    "id": "P-04",
+    "anomalie": "ANO-038",
+    "type": "standard",
+    "date": "2026-08-31",
+    "journal": "OD",
+    "libelle": "Contre-passation du doublon ED77812",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "GL:E-2026-08-0014",
+      "GL:E-2026-08-0004"
+    ],
+    "lignes": [
+      {
+        "compte": "6111",
+        "debit": 0,
+        "credit": 178800
+      },
+      {
+        "compte": "34552",
+        "debit": 0,
+        "credit": 35760
+      },
+      {
+        "compte": "44110001",
+        "tiers": "F001",
+        "debit": 214560,
+        "credit": 0
+      }
+    ]
+  },
+  {
+    "id": "P-05A",
+    "anomalie": "ANO-039",
+    "type": "standard",
+    "date": "2026-08-14",
+    "journal": "OD",
+    "libelle": "Frais bancaire non comptabilisé (banque_alpha:A10)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:banque_alpha:A10",
+      "CALC:150+15=165"
+    ],
+    "lignes": [
+      {
+        "compte": "6147",
+        "debit": 150,
+        "credit": 0
+      },
+      {
+        "compte": "34552",
+        "debit": 15,
+        "credit": 0
+      },
+      {
+        "compte": "51411",
+        "debit": 0,
+        "credit": 165
+      }
+    ]
+  },
+  {
+    "id": "P-05B",
+    "anomalie": "ANO-039",
+    "type": "standard",
+    "date": "2026-08-30",
+    "journal": "OD",
+    "libelle": "Frais bancaire non comptabilisé (banque_alpha:A24)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:banque_alpha:A24",
+      "CALC:60+6=66"
+    ],
+    "lignes": [
+      {
+        "compte": "6147",
+        "debit": 60,
+        "credit": 0
+      },
+      {
+        "compte": "34552",
+        "debit": 6,
+        "credit": 0
+      },
+      {
+        "compte": "51411",
+        "debit": 0,
+        "credit": 66
+      }
+    ]
+  },
+  {
+    "id": "P-05C",
+    "anomalie": "ANO-039",
+    "type": "standard",
+    "date": "2026-08-28",
+    "journal": "OD",
+    "libelle": "Frais bancaire non comptabilisé (banque_omega:O04)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:banque_omega:O04",
+      "CALC:200+20=220"
+    ],
+    "lignes": [
+      {
+        "compte": "6147",
+        "debit": 200,
+        "credit": 0
+      },
+      {
+        "compte": "34552",
+        "debit": 20,
+        "credit": 0
+      },
+      {
+        "compte": "51412",
+        "debit": 0,
+        "credit": 220
+      }
+    ]
+  },
+  {
+    "id": "P-06",
+    "anomalie": "ANO-040",
+    "type": "standard",
+    "date": "2026-08-30",
+    "journal": "OD",
+    "libelle": "Extourne chèque client impayé (banque_alpha:A23)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:banque_alpha:A23"
+    ],
+    "lignes": [
+      {
+        "compte": "34210003",
+        "tiers": "C003",
+        "debit": 24000,
+        "credit": 0
+      },
+      {
+        "compte": "51411",
+        "debit": 0,
+        "credit": 24000
+      }
+    ]
+  },
+  {
+    "id": "P-07",
+    "anomalie": "ANO-041",
+    "type": "standard",
+    "date": "2026-08-18",
+    "journal": "OD",
+    "libelle": "Retrait DAB reclassé en alimentation de caisse (banque_alpha:A12)",
+    "certitude": "certaine",
+    "statut": "proposee",
+    "preuves": [
+      "BQ:banque_alpha:A12",
+      "GL:E-2026-08-0024"
+    ],
+    "lignes": [
+      {
+        "compte": "5161",
+        "debit": 5000,
+        "credit": 0
+      },
+      {
+        "compte": "61431",
+        "debit": 0,
+        "credit": 5000
+      }
+    ]
+  }
+]

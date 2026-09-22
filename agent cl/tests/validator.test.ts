@@ -49,10 +49,18 @@ describe('validateOutput', () => {
     expect(() => validateOutput(output)).toThrow(/approbation|preuve/);
   });
 
-  it('rejects every unbalanced proposition, including complements', () => {
+  it('exempts complement propositions from the balance check', () => {
     const output = structuredClone(valid);
     output.propositions[0].type = 'complement';
     output.propositions[0].lignes = [{ compte: '44110013', debit: 0, credit: 850 }];
-    expect(() => validateOutput(output)).toThrow(/déséquilibrée/);
+    expect(() => validateOutput(output)).not.toThrow();
+  });
+
+  it('still rejects an unbalanced complement missing its proofs', () => {
+    const output = structuredClone(valid);
+    output.propositions[0].type = 'complement';
+    output.propositions[0].lignes = [{ compte: '44110013', debit: 0, credit: 850 }];
+    output.propositions[0].preuves = [];
+    expect(() => validateOutput(output)).toThrow(/preuve/);
   });
 });

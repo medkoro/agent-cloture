@@ -4,6 +4,7 @@
     "titre": "Periode verrouillee",
     "description": "L’écriture E-2026-08-0001 est datée dans une période verrouillée ; aucune écriture corrective n’est générée.",
     "gravite": "bloquante",
+    "action_attendue": "escalade_expert_comptable",
     "preuves": [
       "GL:OD-2026-07-0093"
     ],
@@ -403,6 +404,49 @@
   },
   {
     "id": "ANO-038",
+    "titre": "Facture fournisseur en doublon",
+    "description": "L’écriture E-2026-08-0014 duplique l’écriture E-2026-08-0004 déjà justifiée ; une contre-passation est proposée.",
+    "gravite": "haute",
+    "preuves": [
+      "GL:E-2026-08-0014",
+      "GL:E-2026-08-0004"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-039",
+    "titre": "Frais bancaires débités non comptabilisés",
+    "description": "Les frais suivants apparaissent sur les relevés bancaires sans écriture correspondante dans le grand livre : banque_alpha:A10, banque_alpha:A24, banque_omega:O04.",
+    "gravite": "moyenne",
+    "preuves": [
+      "BQ:banque_alpha:A10",
+      "BQ:banque_alpha:A24",
+      "BQ:banque_omega:O04"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-040",
+    "titre": "Chèque client impayé",
+    "description": "Le règlement banque_alpha:A23 a été rejeté par la banque ; une extourne du client concerné est proposée.",
+    "gravite": "haute",
+    "preuves": [
+      "BQ:banque_alpha:A23"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-041",
+    "titre": "Retrait DAB comptabilisé en charge",
+    "description": "Le retrait banque_alpha:A12 alimente la caisse mais a été saisi sur un compte de charge ; une reclassification est proposée.",
+    "gravite": "moyenne",
+    "preuves": [
+      "BQ:banque_alpha:A12"
+    ],
+    "question": null
+  },
+  {
+    "id": "ANO-042",
     "titre": "Dotation d’immobilisations à revoir",
     "description": "Une dotation déterministe a été calculée depuis le registre, mais aucune écriture n’est générée sans validation des comptes et des règles applicables.",
     "gravite": "moyenne",
@@ -412,28 +456,6 @@
       "IMMO:IMM-003",
       "IMMO:IMM-004",
       "IMMO:IMM-005"
-    ],
-    "question": null
-  },
-  {
-    "id": "ANO-039",
-    "titre": "Écart de rapprochement bancaire (banque_alpha)",
-    "description": "Le solde du relevé et le solde du grand livre ne concordent pas ; aucune correction automatique n’est proposée à cette étape.",
-    "gravite": "haute",
-    "preuves": [
-      "BQ:banque_alpha",
-      "GL:compte:51411"
-    ],
-    "question": null
-  },
-  {
-    "id": "ANO-040",
-    "titre": "Écart de rapprochement bancaire (banque_omega)",
-    "description": "Le solde du relevé et le solde du grand livre ne concordent pas ; aucune correction automatique n’est proposée à cette étape.",
-    "gravite": "haute",
-    "preuves": [
-      "BQ:banque_omega",
-      "GL:compte:51412"
     ],
     "question": null
   }
